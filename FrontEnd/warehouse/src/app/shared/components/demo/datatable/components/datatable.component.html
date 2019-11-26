@@ -1,0 +1,59 @@
+<div class="card-header">
+    <h1 class="card-title">Monthly Recap Report</h1>
+    <div class="card-tools">
+        <button type="button" class="btn btn-tool add-button">
+            <i class="fas fa-plus"></i>
+        </button>
+        <button type="button" class="btn btn-tool print-button">
+            <i class="fas fa-print"></i>
+        </button>
+        <button type="button" class="btn btn-tool excel-button">
+            <i class="fas fa-file-excel"></i>
+        </button>
+        <button type="button" class="btn btn-tool edit-button">
+            <i class="fas fa-save"></i>
+        </button>
+        <button type="button" class="btn btn-tool edit-button">
+            <i class="fas fa-edit"></i>
+        </button>
+      <button type="button" class="btn btn-tool delete-button">
+        <i class="fas fa-trash"></i>
+      </button>
+      <button type="button" class="btn btn-tool cancel-button">
+          <i class="fas fa-power-off"></i>
+      </button>
+    </div>
+  </div>
+  <div class="card-body p-2">
+      <p-table [value]="cars" [columns]="cols" [customSort]="true" (sortFunction)="sort($event)">
+          <ng-template pTemplate="caption">
+              <p-toolbar>
+                  <div class="ui-toolbar-group-right">
+                      <i class="fa fa-search"></i>
+                      <input type="text" size="50" (keydown.enter)="filter($event.target.value)" class="form-control text-search">
+                  </div>
+              </p-toolbar>
+          </ng-template>
+          <ng-template pTemplate="header" let-columns>
+              <tr>
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                    {{col.header}}
+                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                </th>
+              </tr>
+          </ng-template>
+          <ng-template pTemplate="body" *ngFor="let item of cars">
+              <tr>
+                  <td>{{ item.vin }}</td>
+                  <td>{{ item.year }}</td>
+                  <td>{{ item.brand }}</td>
+                  <td>{{ item.color }}</td>
+              </tr>
+          </ng-template>
+          <ng-template pTemplate="summary">
+              <p-paginator [rows]="10" [totalRecords]="cars?.length" [pageLinkSize]="5" [rowsPerPageOptions]="[10, 20, 30]" (onPageChange)="pageChange($event)"></p-paginator>
+              There are {{cars?.length}} cars
+          </ng-template>
+        </p-table>
+  </div>
+

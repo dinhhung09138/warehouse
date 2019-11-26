@@ -1,0 +1,25 @@
+<div class="content-wrapper">
+  <section class="content">
+    <div class="container-fluid p-0">
+      <div class="row">
+        <div class="col-md-12 p-0">
+          <div class="card">
+            <router-outlet></router-outlet>
+            <section class="content-header">
+                <h1>
+                  Buttons
+                  <small>Control panel</small>
+                </h1>
+                <ol class="breadcrumb">
+                  <li><a [routerLink]="['/']" [routerLinkActive]="['active']"><i class="fa fa-dashboard"></i> Home</a></li>
+                  <li><a [routerLink]="['/demo/datatable']" [routerLinkActive]="['active']">Datatable</a></li>
+                  <li><a [routerLink]="['/demo/common-action']" [routerLinkActive]="['active']">Common action</a></li>
+                  <li><a href="#">UI</a></li>
+                </ol>
+              </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

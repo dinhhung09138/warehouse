@@ -1,0 +1,52 @@
+.navbar-custom-menu > .navbar-nav > app-navigation-email > li,
+.navbar-custom-menu > .navbar-nav > app-navigation-notification > li,
+.navbar-custom-menu > .navbar-nav > app-navigation-task > li,
+.navbar-custom-menu > .navbar-nav > app-navigation-account > li {
+  position: relative;
+  display: block;
+}
+.navbar-custom-menu > .navbar-nav > app-navigation-email > li > a,
+.navbar-custom-menu > .navbar-nav > app-navigation-notification > li > a,
+.navbar-custom-menu > .navbar-nav > app-navigation-task > li > a,
+.navbar-custom-menu > .navbar-nav > app-navigation-account > li > a {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  line-height: 20px;
+}
+.navbar-custom-menu > .navbar-nav > app-navigation-email > li > a >.label,
+.navbar-custom-menu > .navbar-nav > app-navigation-notification > li > a >.label,
+.navbar-custom-menu > .navbar-nav > app-navigation-task > li > a >.label,
+.navbar-custom-menu > .navbar-nav > app-navigation-account > li > a >.label {
+  position: absolute;
+  top: 9px;
+  right: 7px;
+  text-align: center;
+  font-size: 9px;
+  padding: 2px 3px;
+  line-height: .9;
+}
+.skin-green .navbar-custom-menu > .navbar-nav > app-navigation-email > li > a,
+.skin-green .navbar-custom-menu > .navbar-nav > app-navigation-notification > li > a,
+.skin-green .navbar-custom-menu > .navbar-nav > app-navigation-task > li > a,
+.skin-green .navbar-custom-menu > .navbar-nav > app-navigation-account > li > a {
+  color: #fff;
+}
+@media (min-width: 768px) {
+  .navbar-nav > app-navigation-email,
+  .navbar-nav > app-navigation-email > li,
+  .navbar-nav > app-navigation-notification,
+  .navbar-nav > app-navigation-notification > li,
+  .navbar-nav > app-navigation-task,
+  .navbar-nav > app-navigation-task > li,
+  .navbar-nav > app-navigation-account,
+  .navbar-nav > app-navigation-account > li {
+      float: left;
+  }
+  .navbar-nav > app-navigation-email > li > a,
+  .navbar-nav > app-navigation-notification > li > a,
+  .navbar-nav > app-navigation-task > li > a,
+  .navbar-nav > app-navigation-account > li > a {
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+  }
+}

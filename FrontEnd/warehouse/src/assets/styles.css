@@ -1,0 +1,103 @@
+/* ----------------- Navigation ----------------- */
+.nav-flat.nav-sidebar > .nav-item .nav-treeview .nav-item > .nav-link:hover,
+.nav-flat.nav-sidebar > .nav-item > .nav-treeview .nav-item > .nav-link:hover {
+  color: #28a745;
+}
+/* ----------------- EndNavigation ----------------- */
+
+/* ----------------- Modal ----------------- */
+.modal-backdrop.fade {
+  filter: alpha(opacity=0);
+  opacity: 0.5;
+}
+/* ----------------- End Modal ----------------- */
+
+/* ----------------- Table ----------------- */
+body .ui-widget {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+body .ui-table .ui-sortable-column.ui-state-highlight {
+  background-color: #f4f4f4;
+  color: #333333;
+}
+body .ui-table .ui-sortable-column.ui-state-highlight .ui-sortable-column-icon {
+  color: #848484;
+}
+body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
+  background-color: #28a745;
+}
+body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight,
+body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item-group.ui-state-highlight {
+  color: #ffffff;
+  background-color: #28a745;
+}
+body .ui-dropdown .ui-dropdown-label-container .ui-inputtext {
+  background: unset;
+}
+body .ui-table-summary .ui-widget {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+.pi-sort-up:before {
+  content: "\e99f";
+}
+.pi-sort-down:before {
+  content: "\e9a0";
+}
+body .ui-table .ui-toolbar {
+  padding: 0.3em;
+}
+body .ui-table .ui-table-caption,
+body .ui-table .ui-table-summary {
+  border: unset;
+  padding: 0;
+}
+body .ui-table .ui-table-caption .ui-toolbar .fa-search {
+  margin: 10px 4px 0 0;
+}
+body .ui-table .ui-table-caption .ui-toolbar .text-search {
+  width:auto; float: right;
+}
+/* ----------------- End Table ----------------- */
+
+/* ----------------- Card ----------------- */
+.card-title {
+  font-size: 1.5rem;
+}
+.card-header .card-tools button {
+  margin-left: 10px;
+}
+.card-header .card-tools button:hover {
+  box-shadow: 0 0 11px rgba(33,33,33,.6);
+}
+.card-header .card-tools .edit-button {
+  border: 1px solid #28a745;
+  background: #28a745;
+}
+.card-header .card-tools .add-button,
+.card-header .card-tools .excel-button,
+.card-header .card-tools .print-button {
+  border: 1px solid #17a2b8;
+  background: #17a2b8;
+}
+.card-header .card-tools .delete-button {
+  border: 1px solid #dc3545;
+  background: #dc3545;
+}
+.card-header .card-tools .cancel-button {
+  border: 1px solid #6c757d;
+  background-color: #6c757d;;
+}
+.card-header .card-tools i {
+  color: #fff;
+}
+/* ----------------- End Card ----------------- */
+
+/* ----------------- Control ----------------- */
+.form-control {
+  height: calc(2rem + 2px);
+  color: #000000;
+  border-radius: .2rem;
+}
+/* ----------------- End Control ----------------- */

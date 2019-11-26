@@ -1,0 +1,16 @@
+.main-footer {
+  background: #fff;
+  padding: 15px;
+  color: #444;
+  border-top: 1px solid #d2d6de;
+}
+.pull-right {
+  float: right;
+}
+b, strong {
+  font-weight: 700;
+}
+a {
+  color: #3c8dbc;
+  text-decoration: none;
+}

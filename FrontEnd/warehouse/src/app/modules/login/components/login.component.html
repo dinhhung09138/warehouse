@@ -1,0 +1,47 @@
+<div id="login">
+  <div class="container">
+      <div id="login-row" class="row justify-content-center align-items-center">
+          <div id="login-column" class="col-md-6">
+              <div id="login-box" class="col-md-12">
+                <div class="form-group text-center">
+                  Logo here
+                </div>
+                <form class="form" [formGroup]="loginForm" (submit)="!isLoading ? onSubmitForm() : false"
+                    autocomplete="off">
+                  <div class="form-group">
+                    <p-messages [(value)]="warningMessage"></p-messages>
+                  </div>
+                  <h3 class="text-center text-info">{{ formMessage.title }}</h3>
+                  <div class="form-group">
+                      <label class="text-info">{{ formMessage.form.userName }}:</label><br>
+                      <input type="text" formControlName="userName" class="form-control"
+                              [ngClass]="{'is-invalid': submitted && loginForm.controls['userName'].errors}" tabindex="1">
+                      <div *ngIf="submitted && loginForm.controls['userName'].errors" class="invalid-feedback">
+                        <div *ngIf="loginForm.controls['userName'].errors.required">{{ formMessage.form.validation.requiredName }}</div>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label class="text-info">{{ formMessage.form.password }}:</label><br>
+                      <input type="password" formControlName="password" class="form-control" tabindex="2"
+                              [ngClass]="{'is-invalid': submitted && loginForm.controls['password'].errors}">
+                      <div *ngIf="submitted && loginForm.controls['password'].errors" class="invalid-feedback">
+                        <div *ngIf="loginForm.controls['password'].errors.required">{{ formMessage.form.validation.requiredPassword }}</div>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label class="text-info"><span>{{ formMessage.form.rememberMe }}</span> 
+                      <span><input formControlName="rememberMe" type="checkbox" tabindex="3"></span></label><br>
+                      <button type="submit" name="submit" class="btn btn-info btn-md w-100" tabindex="4">
+                        {{ formMessage.form.button.login }}
+                        <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+                      </button>
+                  </div>
+                  <div class="form-group text-center mb-0">
+                    {{ formMessage.companyInfo.name }}
+                  </div>
+                </form>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
