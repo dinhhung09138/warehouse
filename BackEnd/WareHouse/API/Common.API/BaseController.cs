@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Common.API.Hubs;
 using Core.Common.Services.Interfaces;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +14,7 @@ namespace Common.API
     /// <summary>
     /// Base controller.
     /// </summary>
+    [EnableCors("WarehouseApplicationPolicy")]
     [ApiController]
     public class BaseController : Controller
     {

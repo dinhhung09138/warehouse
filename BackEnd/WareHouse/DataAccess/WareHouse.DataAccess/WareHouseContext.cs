@@ -1124,9 +1124,10 @@ namespace Warehouse.DataAccess
                             .HasName("GoodsIssue_UNI_IssueCode");
 
                 entity.Property(e => e.IssueCode)
-                            .HasColumnName("Id")
-                            .HasColumnType("IssueCode")
-                            .IsRequired(true);
+                            .HasColumnName("IssueCode")
+                            .HasMaxLength(20)
+                            .IsRequired(true)
+                            .IsUnicode(false);
 
                 entity.Property(e => e.OrderNumber)
                             .HasColumnName("OrderNumber")

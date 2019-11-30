@@ -8,6 +8,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Services\Admin.Service\Admin.Service.csproj" />
+    <ProjectReference Include="..\Common.API\Common.API.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Core.Common">

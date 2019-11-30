@@ -12,7 +12,7 @@ namespace Warehouse.DataAccess.Entities
         public Guid Id { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
-        public string AvatarFileId { get; set; }
+        public Guid? AvatarFileId { get; set; }
         public string Mobile { get; set; }
         public string WorkPhone { get; set; }
         public string Fax { get; set; }
