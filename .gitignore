@@ -1,0 +1,15 @@
+BackEnd/WareHouse/.vs/
+BackEnd/WareHouse/API/Authentication.API/obj/
+BackEnd/WareHouse/API/Common.API/bin/
+BackEnd/WareHouse/API/Common.API/obj/
+BackEnd/WareHouse/API/Authentication.API/bin/
+BackEnd/WareHouse/API/WareHouse.API/obj/
+BackEnd/WareHouse/DataAccess/WareHouse.DataAccess/obj/
+BackEnd/WareHouse/Services/Authentication.Service/obj/
+BackEnd/WareHouse/Services/Authentication.Service/bin/
+BackEnd/WareHouse/WareHouse/bin/
+BackEnd/WareHouse/API/WareHouse.API/bin/
+BackEnd/WareHouse/DataAccess/WareHouse.DataAccess/bin/
+BackEnd/WareHouse/Services/WareHouse.Service/obj/
+BackEnd/WareHouse/Services/WareHouse.Service/bin/
+BackEnd/WareHouse/WareHouse/obj/
