@@ -13,3 +13,15 @@ BackEnd/WareHouse/DataAccess/WareHouse.DataAccess/bin/
 BackEnd/WareHouse/Services/WareHouse.Service/obj/
 BackEnd/WareHouse/Services/WareHouse.Service/bin/
 BackEnd/WareHouse/WareHouse/obj/
+BackEnd/WareHouse/API/Admin.API/bin/
+BackEnd/WareHouse/API/Admin.API/obj/
+BackEnd/WareHouse/API/Customer.API/bin/
+BackEnd/WareHouse/API/Customer.API/obj/
+BackEnd/WareHouse/API/PurchaseOrder.API/obj/
+BackEnd/WareHouse/API/PurchaseOrder.API/bin/
+BackEnd/WareHouse/Services/Admin.Service/bin/
+BackEnd/WareHouse/Services/Admin.Service/obj/
+BackEnd/WareHouse/Services/PurchaseOrder.Service/obj/
+BackEnd/WareHouse/Services/Customer.Service/obj/
+BackEnd/WareHouse/Services/Customer.Service/bin/
+BackEnd/WareHouse/Services/PurchaseOrder.Service/bin/
