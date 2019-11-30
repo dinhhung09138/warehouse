@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Warehouse.Service.Models
+namespace WareHouse.Service.Models
 {
     /// <summary>
     /// Goods unit model.

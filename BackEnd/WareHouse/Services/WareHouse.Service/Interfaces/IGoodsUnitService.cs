@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Core.Common.Models;
-using Warehouse.Service.Models;
+using WareHouse.Service.Models;
 
-namespace Warehouse.Service.Interfaces
+namespace WareHouse.Service.Interfaces
 {
     /// <summary>
     /// Goods unit service interface.

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Core.Common.Models;
-using Partner.Service.Models;
+using Customer.Service.Models;
 
-namespace Partner.Service.Interfaces
+namespace Customer.Service.Interfaces
 {
     /// <summary>
     /// Customer service interface.

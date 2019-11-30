@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Warehouse.Service.Models
+namespace WareHouse.Service.Models
 {
     /// <summary>
     /// Goods category model.

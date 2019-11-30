@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Warehouse.Service.Constants
+namespace WareHouse.Service.Constants
 {
     /// <summary>
     /// Warehouse common message.

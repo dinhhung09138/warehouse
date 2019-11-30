@@ -6,13 +6,13 @@ using Core.Common.Extensions;
 using Core.Common.Messages;
 using Core.Common.Models;
 using Core.Common.Services.Interfaces;
-using Warehouse.Service.Interfaces;
-using Warehouse.Service.Models;
+using WareHouse.Service.Interfaces;
+using WareHouse.Service.Models;
 using Warehouse.DataAccess;
 using Warehouse.DataAccess.Entities;
 using Z.EntityFramework.Plus;
 
-namespace Warehouse.Service
+namespace WareHouse.Service
 {
     /// <summary>
     /// Goods category service.

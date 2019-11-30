@@ -8,10 +8,14 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Services\WareHouse.Service\WareHouse.Service.csproj" />
+    <ProjectReference Include="..\Common.API\Common.API.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Core.Common">
       <HintPath>..\..\Libs\Core.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Authentication.JwtBearer">
+      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.aspnetcore.authentication.jwtbearer\2.2.0\lib\netstandard2.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll</HintPath>
     </Reference>
   </ItemGroup>
 

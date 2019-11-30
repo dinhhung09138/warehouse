@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Partner.Service.Models
+namespace Customer.Service.Models
 {
     /// <summary>
     /// Customer model.

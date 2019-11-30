@@ -6,13 +6,13 @@ using Core.Common.Extensions;
 using Core.Common.Messages;
 using Core.Common.Models;
 using Core.Common.Services.Interfaces;
-using Partner.Service.Interfaces;
-using Partner.Service.Models;
+using Customer.Service.Interfaces;
+using Customer.Service.Models;
 using Warehouse.DataAccess;
 using Warehouse.DataAccess.Entities;
 using Z.EntityFramework.Plus;
 
-namespace Partner.Service.Partner
+namespace Customer.Service.Partner
 {
     /// <summary>
     /// Customer service.
@@ -191,7 +191,7 @@ namespace Partner.Service.Partner
 
                     await _context.CustomerRepository.Query()
                                                      .Where(m => m.Id == model.Id)
-                                                     .UpdateAsync(m => new Customer()
+                                                     .UpdateAsync(m => new Warehouse.DataAccess.Entities.Customer()
                                                      {
                                                          Name = model.Name,
                                                          LogoFileId = model.LogoFileId,
@@ -215,7 +215,7 @@ namespace Partner.Service.Partner
                 }
                 else
                 {
-                    await _context.CustomerRepository.AddAsync(new Customer()
+                    await _context.CustomerRepository.AddAsync(new Warehouse.DataAccess.Entities.Customer()
                     {
                         Id = Guid.NewGuid(),
                         LogoFileId = model.LogoFileId,
@@ -278,7 +278,7 @@ namespace Partner.Service.Partner
                 else
                 {
                     await _context.CustomerRepository.Query().Where(m => m.Id == model.Id)
-                                                         .UpdateAsync(m => new Customer()
+                                                         .UpdateAsync(m => new Warehouse.DataAccess.Entities.Customer()
                                                          {
                                                              IsActive = model.IsActive,
                                                              UpdateBy = model.CurrentUserId,
@@ -326,7 +326,7 @@ namespace Partner.Service.Partner
                 {
                     await _context.CustomerRepository.Query()
                                                         .Where(m => m.Id == model.Id)
-                                                        .UpdateAsync(m => new Customer()
+                                                        .UpdateAsync(m => new Warehouse.DataAccess.Entities.Customer()
                                                         {
                                                             Deleted = true,
                                                             UpdateBy = model.CurrentUserId,
