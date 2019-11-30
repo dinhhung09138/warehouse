@@ -37,7 +37,7 @@ namespace WareHouse.API
         /// </summary>
         /// <param name="filter">Filter model context.</param>
         /// <returns>IActionResult.</returns>
-        [HttpGet]
+        [HttpPost]
         [Route("list")]
         public async Task<IActionResult> List(FilterModel filter)
         {
