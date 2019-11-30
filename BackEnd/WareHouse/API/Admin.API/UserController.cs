@@ -6,6 +6,8 @@ using Core.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 using Admin.Service.Interfaces;
 using Common.API;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Admin.API
 {
@@ -13,6 +15,7 @@ namespace Admin.API
     /// User controller.
     /// </summary>
     [Route("api/admin/user")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UserController : BaseController
     {
         private readonly IUserService _userService;
