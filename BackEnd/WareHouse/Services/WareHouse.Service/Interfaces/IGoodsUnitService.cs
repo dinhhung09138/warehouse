@@ -20,6 +20,12 @@ namespace WareHouse.Service.Interfaces
         Task<ResponseModel> List(FilterModel filter);
 
         /// <summary>
+        /// Get list of goods unit data to show on combobox.
+        /// </summary>
+        /// <returns>ResponseModel object.</returns>
+        Task<ResponseModel> ListCombobox();
+
+        /// <summary>
         /// Get goods unit detail.
         /// </summary>
         /// <param name="id">Goods unit's id.</param>

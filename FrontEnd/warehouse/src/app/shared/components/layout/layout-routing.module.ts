@@ -18,7 +18,22 @@ const routes: Routes = [
     path: 'demo/common-action',
     component: LayoutComponent,
     loadChildren: () => import('../demo/common-action/common-action.module').then(m => m.CommonActionModule),
-  }
+  },
+  {
+    path: 'warehouse/goods-unit',
+    component: LayoutComponent,
+    loadChildren: () => import('../../../modules/warehouse/unit/unit.module').then(m => m.UnitModule),
+  },
+  {
+    path: 'warehouse/goods-category',
+    component: LayoutComponent,
+    loadChildren: () => import('../../../modules/warehouse/goods-category/goods-category.module').then(m => m.GoodsCategoryModule),
+  },
+  {
+    path: 'warehouse/goods',
+    component: LayoutComponent,
+    loadChildren: () => import('../../../modules/warehouse/goods/goods.module').then(m => m.GoodsModule),
+  },
 ];
 
 @NgModule({

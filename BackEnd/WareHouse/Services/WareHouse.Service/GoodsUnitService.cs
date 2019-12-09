@@ -12,6 +12,7 @@ using WareHouse.Service.Models;
 using Warehouse.DataAccess;
 using Warehouse.DataAccess.Entities;
 using Z.EntityFramework.Plus;
+using Microsoft.EntityFrameworkCore;
 
 namespace WareHouse.Service
 {
@@ -33,8 +34,8 @@ namespace WareHouse.Service
         /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
-        /// <param name="context">data context.</param>
-        /// <param name="logger">log service.</param>
+        /// <param name="context">Data context.</param>
+        /// <param name="logger">Log service.</param>
         public GoodsUnitService(IWareHouseUnitOfWork context, ILoggerService logger)
         {
             _context = context;
@@ -60,7 +61,7 @@ namespace WareHouse.Service
                                                    .Where(m => m.Deleted == false)
                                                    .Select(m => new GoodsUnitModel
                                                    {
-                                                       Id = m.Id,
+                                                       Id = m.Id.ToString(),
                                                        Code = m.Code,
                                                        Name = m.Name,
                                                        IsActive = m.IsActive,
@@ -73,20 +74,41 @@ namespace WareHouse.Service
                                             || m.Name.ToLower().Contains(filter.Text));
                 }
 
-                if (filter.Sort != null)
-                {
-                    query = query.SortBy(filter.Sort);
-                }
-                else
-                {
-                    query = query.OrderBy(m => m.Code);
-                }
+                query = query.OrderBy(m => m.Code);
 
                 response.Result = await query.ToBaseList(filter.Paging?.PageIndex, filter.Paging?.PageSize).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 _logger.AddErrorLog(this.GetType().Name, MethodBase.GetCurrentMethod().Name, filter, ex);
+                response.ResponseStatus = Core.Common.Enums.ResponseStatus.Error;
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Get list of goods unit data to show on combobox.
+        /// </summary>
+        /// <returns>ResponseModel object.</returns>
+        public async Task<ResponseModel> ListCombobox()
+        {
+            var response = new ResponseModel();
+            try
+            {
+                var query = _context.GoodsUnitRepository.Query()
+                                                   .Where(m => m.Deleted == false && m.IsActive == true)
+                                                   .Select(m => new SelectedItemModel
+                                                   {
+                                                       Value = m.Id.ToString(),
+                                                       Title = m.Name,
+                                                   });
+
+                response.Result = await query.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.AddErrorLog(this.GetType().Name, MethodBase.GetCurrentMethod().Name, ex);
                 response.ResponseStatus = Core.Common.Enums.ResponseStatus.Error;
             }
 
@@ -113,7 +135,7 @@ namespace WareHouse.Service
                 }
 
                 GoodsUnitModel md = new GoodsUnitModel();
-                md.Id = item.Id;
+                md.Id = item.Id.ToString();
                 md.Name = item.Name;
                 md.Code = item.Code;
                 md.IsActive = item.IsActive;
@@ -147,8 +169,10 @@ namespace WareHouse.Service
 
                 if (model.IsEdit)
                 {
+                    Guid id = new Guid(model.Id);
+
                     var checkExists = await _context.GoodsUnitRepository
-                                                        .AnyAsync(m => m.Id == model.Id)
+                                                        .AnyAsync(m => m.Id == id)
                                                         .ConfigureAwait(false);
 
                     if (!checkExists)
@@ -158,12 +182,24 @@ namespace WareHouse.Service
                         return response;
                     }
 
-                    var checkCurrent = await _context.GoodsUnitRepository
-                                                        .AnyAsync(m => m.Id == model.Id
-                                                                       && m.RowVersion == model.RowVersion)
+                    checkExists = await _context.GoodsUnitRepository
+                                                        .AnyAsync(m => m.Id != id
+                                                                       && m.Code == model.Code)
                                                         .ConfigureAwait(false);
 
-                    if (!checkCurrent)
+                    if (checkExists)
+                    {
+                        response.Errors.Add(Message.CodeIsExists);
+                        response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
+                        return response;
+                    }
+
+                    var checkCurrent = await _context.GoodsUnitRepository
+                                                        .AnyAsync(m => m.Id == id
+                                                                       && m.RowVersion != model.RowVersion)
+                                                        .ConfigureAwait(false);
+
+                    if (checkCurrent)
                     {
                         response.Errors.Add(CommonMessage.DataUpdatedByOtherUser);
                         response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
@@ -171,7 +207,7 @@ namespace WareHouse.Service
                     }
 
                     await _context.GoodsUnitRepository.Query()
-                        .Where(m => m.Id == model.Id)
+                        .Where(m => m.Id == id)
                         .UpdateAsync(m => new GoodsUnit()
                         {
                             Code = model.Code,
@@ -183,6 +219,14 @@ namespace WareHouse.Service
                 }
                 else
                 {
+                    var checkCode = await _context.GoodsUnitRepository.AnyAsync(m => m.Code == model.Code);
+                    if (checkCode)
+                    {
+                        response.Errors.Add(Message.CodeIsExists);
+                        response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
+                        return response;
+                    }
+
                     await _context.GoodsUnitRepository.AddAsync(new GoodsUnit()
                     {
                         Id = Guid.NewGuid(),
@@ -221,8 +265,10 @@ namespace WareHouse.Service
                     throw new Exception(CommonMessage.ParameterInvalid);
                 }
 
+                Guid id = new Guid(model.Id);
+
                 var checkExistsAccount = await _context.GoodsUnitRepository
-                                                            .AnyAsync(m => m.Id == model.Id)
+                                                            .AnyAsync(m => m.Id == id)
                                                             .ConfigureAwait(true);
 
                 if (!checkExistsAccount)
@@ -233,7 +279,7 @@ namespace WareHouse.Service
                 }
                 else
                 {
-                    await _context.GoodsUnitRepository.Query().Where(m => m.Id == model.Id)
+                    await _context.GoodsUnitRepository.Query().Where(m => m.Id == id)
                                                          .UpdateAsync(m => new GoodsUnit()
                                                          {
                                                              IsActive = model.IsActive,
@@ -268,11 +314,13 @@ namespace WareHouse.Service
                     throw new Exception(CommonMessage.ParameterInvalid);
                 }
 
-                var checkExistsAccount = await _context.UserRepository
-                                                        .AnyAsync(m => m.Id == model.Id)
+                Guid id = new Guid(model.Id);
+
+                var checkExists = await _context.GoodsUnitRepository
+                                                        .AnyAsync(m => m.Id == id)
                                                         .ConfigureAwait(true);
 
-                if (!checkExistsAccount)
+                if (!checkExists)
                 {
                     response.Errors.Add(CommonMessage.IdNotFound);
                     response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
@@ -281,7 +329,7 @@ namespace WareHouse.Service
                 else
                 {
                     await _context.GoodsUnitRepository.Query()
-                                                        .Where(m => m.Id == model.Id)
+                                                        .Where(m => m.Id == id)
                                                         .UpdateAsync(m => new GoodsUnit()
                                                         {
                                                             Deleted = true,

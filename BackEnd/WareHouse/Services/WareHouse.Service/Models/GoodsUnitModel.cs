@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace WareHouse.Service.Models
@@ -9,12 +10,17 @@ namespace WareHouse.Service.Models
     /// </summary>
     public class GoodsUnitModel
     {
-        public Guid Id { get; set; }
+        public string Id { get; set; }
 
+        [Required]
+        [MaxLength(20)]
         public string Code { get; set; }
 
+        [Required]
+        [MaxLength(200)]
         public string Name { get; set; }
 
+        [Required]
         public bool IsActive { get; set; }
 
         public byte[] RowVersion { get; set; }
