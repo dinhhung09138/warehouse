@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Common.API;
 using Core.Common.Services;
 using Core.Common.Services.Interfaces;
 using Warehouse.DataAccess;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +16,10 @@ using Admin.Service;
 using Admin.Service.Interfaces;
 using Authentication.Service;
 using Authentication.Service.Interfaces;
+using WareHouse.Service;
+using WareHouse.Service.Interfaces;
+using Customer.Service;
+using Customer.Service.Interfaces;
 
 namespace WareHouseApplication.Extensions
 {
@@ -40,10 +41,13 @@ namespace WareHouseApplication.Extensions
             {
                 builder.WithOrigins(config["CORS"])
                        .AllowAnyMethod()
+                       .SetIsOriginAllowed((host) => true)
+                       .SetIsOriginAllowedToAllowWildcardSubdomains()
                        .AllowAnyHeader();
             }));
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(option => option.EnableEndpointRouting = false)
+                    .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             return services;
         }
@@ -162,6 +166,10 @@ namespace WareHouseApplication.Extensions
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<ISessionLogService, SessionLogService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IGoodsUnitService, GoodsUnitService>();
+            services.AddScoped<IGoodsCategoryService, GoodsCategoryService>();
+            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IGoodsService, GoodsService>();            
             return services;
         }
     }

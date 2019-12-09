@@ -9,5 +9,9 @@ namespace WareHouse.Service.Constants
     /// </summary>
     public static class Message
     {
+        /// <summary>
+        /// Code is exists.
+        /// </summary>
+        public static readonly string CodeIsExists = "Code is exists";
     }
 }

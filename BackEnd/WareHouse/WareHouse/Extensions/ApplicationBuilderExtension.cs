@@ -26,7 +26,7 @@ namespace WareHouseApplication.Extensions
         {
             app.UseCors("WarehouseApplicationPolicy");
 
-            // app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+            //app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 
             app.UseMvc(routes =>
             {
@@ -50,6 +50,7 @@ namespace WareHouseApplication.Extensions
         /// <returns>IApplicationBuilder.</returns>
         public static IApplicationBuilder SetupEnvironment(this IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            app.UseAuthentication();
             app.UseAuthentication();
 
             app.UseStaticFiles();

@@ -39,9 +39,34 @@ namespace WareHouse.API
         /// <returns>IActionResult.</returns>
         [HttpPost]
         [Route("list")]
-        public async Task<IActionResult> List(FilterModel filter)
+        public async Task<IActionResult> List([FromBody] FilterModel filter)
         {
             var response = await _categoryService.List(filter).ConfigureAwait(false);
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Get list of goods category to show on combobox.
+        /// </summary>
+        /// <returns>IActionResult.</returns>
+        [HttpGet]
+        [Route("list-combobox")]
+        public async Task<IActionResult> ListCombobox()
+        {
+            var response = await _categoryService.ListCombobox().ConfigureAwait(false);
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Get goods category by id.
+        /// </summary>
+        /// <param name="id">Category's id.</param>
+        /// <returns>IActionResult.</returns>
+        [HttpGet]
+        [Route("detail/{id}")]
+        public async Task<IActionResult> Detail([FromRoute] string id)
+        {
+            var response = await _categoryService.Detail(new Guid(id)).ConfigureAwait(false);
             return Ok(response);
         }
 
@@ -52,7 +77,7 @@ namespace WareHouse.API
         /// <returns>IActionResult.</returns>
         [HttpPost]
         [Route("save")]
-        public async Task<IActionResult> Save(GoodsCategoryModel model)
+        public async Task<IActionResult> Save([FromBody] GoodsCategoryModel model)
         {
             if (model != null)
             {
@@ -70,7 +95,7 @@ namespace WareHouse.API
         /// <returns>IActionResult.</returns>
         [HttpPut]
         [Route("update-active-status")]
-        public async Task<IActionResult> UpdateActiveStatus(GoodsCategoryModel model)
+        public async Task<IActionResult> UpdateActiveStatus([FromBody] GoodsCategoryModel model)
         {
             if (model != null)
             {
@@ -86,9 +111,9 @@ namespace WareHouse.API
         /// </summary>
         /// <param name="model">Goods category model.</param>
         /// <returns>IActionResult.</returns>
-        [HttpDelete]
+        [HttpPut]
         [Route("delete")]
-        public async Task<IActionResult> Delete(GoodsCategoryModel model)
+        public async Task<IActionResult> Delete([FromBody] GoodsCategoryModel model)
         {
             if (model != null)
             {
