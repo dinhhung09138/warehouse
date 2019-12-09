@@ -1,0 +1,150 @@
+<form class="form" [formGroup]="goodsForm" (submit)="!isLoading ? onSubmitForm() : false" autocomplete="off">
+    <div class="modal-header">
+        <h5 class="modal-title"> {{ formMessage.title }} </h5>
+    </div>
+    <div class="modal-body fs-20">
+        <div class="row">
+            <div class="col-12">
+                <p-messages [(value)]="warningMessage"></p-messages>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                {{ formMessage.form.code}}
+            </div>
+            <div class="col-6">
+                {{ formMessage.form.name }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6 form-group">
+                <input type="text" formControlName="code" required class="form-control" maxlength="20" tabindex="1" [ngClass]="{'is-invalid': submitted && goodsForm.controls['code'].errors}" />
+                <div *ngIf="submitted && goodsForm.controls['code'].errors" class="invalid-feedback">
+                    <div *ngIf="goodsForm.controls['code'].errors.required">
+                        {{ formMessage.message.code}}
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 form-group">
+                <input type="text" formControlName="name" required class="form-control" maxlength="200" tabindex="2" [ngClass]="{'is-invalid': submitted && goodsForm.controls['name'].errors}" />
+                <div *ngIf="submitted && goodsForm.controls['name'].errors" class="invalid-feedback">
+                    <div *ngIf="goodsForm.controls['name'].errors.required">
+                        {{ formMessage.message.name }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-12">
+                        {{ formMessage.form.unit}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 form-group">
+                        <ng-select [items]="unitList" bindLabel="title" bindValue="value" [selectOnTab]="true" tabindex="3" formControlName="unitId" [clearable]="false" class="form-control" [ngClass]="{'is-invalid': submitted && goodsForm.controls['name'].errors}">
+
+                        </ng-select>
+                        <div *ngIf="submitted && goodsForm.controls['unitId'].errors" class="invalid-feedback">
+                            <div *ngIf="goodsForm.controls['unitId'].errors.required">
+                                {{ formMessage.message.unit }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        {{ formMessage.form.category}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 form-group">
+                        <ng-select [items]="categoryList" bindLabel="title" bindValue="value" [selectOnTab]="true" tabindex="4" formControlName="goodsCategoryId" [clearable]="false" class="form-control" [ngClass]="{'is-invalid': submitted && goodsForm.controls['name'].errors}">
+
+                        </ng-select>
+                        <div *ngIf="submitted && goodsForm.controls['goodsCategoryId'].errors" class="invalid-feedback">
+                            <div *ngIf="goodsForm.controls['goodsCategoryId'].errors.required">
+                                {{ formMessage.message.category }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        {{ formMessage.form.brand}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 form-group">
+                        <input type="text" formControlName="brand" class="form-control" maxlength="200" tabindex="5" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        {{ formMessage.form.color}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 form-group">
+                        <input type="text" formControlName="color" class="form-control" maxlength="200" tabindex="6" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        {{ formMessage.form.size}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 form-group">
+                        <input type="text" formControlName="size" class="form-control" maxlength="200" tabindex="7" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        {{ formMessage.form.active }}
+                        <input type="checkbox" formControlName="isActive" tabindex="8" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                {{ formMessage.form.name }}
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <input type="file" name="image" (change)="fileProgress($event)" />
+                        </div>
+                        <div *ngIf="fileUploadProgress">
+                            Upload progress: {{ fileUploadProgress }}
+                        </div>
+                        <div class="image-preview mb-3" *ngIf="previewUrl">
+                            <img [src]="previewUrl" height="300" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div class="row">
+            <div class="col-12 text-center">
+                <button type="button" class="btn btn-tool refresh-button" (click)="onRefreshClick()" tabindex="10">
+                <i class="fas fa-refresh"></i> Refresh
+              </button>
+                <button type="submit" class="btn btn-tool save-button" tabindex="11">
+                <i class="fas fa-save"></i> Save
+              </button>
+                <button type="button" class="btn btn-tool cancel-button" (click)="onFormCloseClick()" tabindex="12">
+                <i class="fas fa-power-off"></i> Close
+              </button>
+            </div>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,197 @@
+import { Component, OnInit, Input } from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { GoodsResource } from '../../goods.resource';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { GoodsModel } from '../../models/goods.model';
+import { GoodsService } from '../../services/goods.service';
+import { ResponseModel } from 'src/app/core/models/response.model';
+import { ResponseStatus } from 'src/app/core/enums/response.enum';
+import { LoadingService } from 'src/app/core/services/loading.service';
+import { ShowMessageService } from 'src/app/core/services/show-message.service';
+import { ItemSelectModel } from 'src/app/core/models/item-select.model';
+import { UnitService } from '../../../unit/services/unit.service';
+import { ThrowStmt, ReadVarExpr } from '@angular/compiler';
+import { GoodsCategoryService } from '../../../goods-category/services/goods-category.service';
+
+@Component({
+  selector: 'app-goods-form',
+  templateUrl: './goods-form.component.html',
+  styleUrls: ['./goods-form.component.css']
+})
+export class GoodsFormComponent implements OnInit {
+
+  @Input() isEdit = false;
+  @Input() goods: GoodsModel;
+  submitted = false;
+  isLoading = false;
+  formMessage = GoodsResource.form;
+  goodsForm: FormGroup;
+  warningMessage: any[];
+  unitList: ItemSelectModel[] = [];
+  categoryList: ItemSelectModel[] = [];
+
+  fileData: File = null;
+  previewUrl: any = null;
+  fileUploadProgress: string = null;
+  uploadedFilePath: string = null;
+
+  constructor(public activeModal: NgbActiveModal,
+              private fb: FormBuilder,
+              private loading: LoadingService,
+              private messageService: ShowMessageService,
+              private goodsService: GoodsService,
+              private unitService: UnitService,
+              private categoryService: GoodsCategoryService) { }
+
+  ngOnInit() {
+    if (this.isEdit === false) {
+      this.goods = new GoodsModel(this.isEdit);
+    }
+    this.initForm();
+    this.getUnitList();
+    this.getGoodsCategoryList();
+  }
+
+  onSubmitForm() {
+    this.submitted = true;
+    this.warningMessage = [];
+
+    if (this.goodsForm.invalid) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.loading.showLoading(true);
+
+    this.goodsService.save(this.goodsForm.value, this.fileData).subscribe((response: ResponseModel) => {
+      if (response.responseStatus === ResponseStatus.warning) {
+        console.log(response.errors.join(','));
+        this.warningMessage.push({severity: 'warn', summary: 'Warning', detail: response.errors.join(',')});
+        this.loading.showLoading(false);
+      } else if (response.responseStatus === ResponseStatus.error) {
+        this.loading.showLoading(false);
+      } else if (response.responseStatus === ResponseStatus.success) {
+        this.messageService.showSuccess(this.formMessage.message.saveSuccess);
+        this.activeModal.close(true);
+        this.loading.showLoading(false);
+      }
+      this.isLoading = false;
+    }, err => {
+      console.log(err);
+      this.isLoading = false;
+      this.loading.showLoading(false);
+    });
+  }
+
+  onFormCloseClick() {
+    this.activeModal.close(false);
+  }
+
+  onRefreshClick() {
+    if (this.isEdit === false) {
+      this.initForm();
+      return;
+    }
+
+    this.loading.showLoading(true);
+    this.goodsService.detail(this.goods.id).subscribe((response: ResponseModel) => {
+      if (response.responseStatus === ResponseStatus.warning) {
+        this.messageService.showWarning(response.errors.join(','));
+        this.loading.showLoading(false);
+      } else if (response.responseStatus === ResponseStatus.error) {
+        this.messageService.showError(response.errors.join(','));
+        this.loading.showLoading(false);
+      } else {
+        this.goods = response.result;
+        this.goodsForm.patchValue({
+          id: response.result.id,
+          code: response.result.code,
+          name: response.result.name,
+          isEdit: this.isEdit,
+          isActive: response.result.isActive,
+          rowVersion: response.result.rowVersion,
+        });
+        this.loading.showLoading(false);
+      }
+    }, err => {
+      console.log(err);
+      this.loading.showLoading(false);
+    });
+  }
+
+  private initForm() {
+    this.goodsForm = this.fb.group({
+      id: [this.goods.id],
+      code: [this.goods.code, [Validators.required, Validators.maxLength(20)]],
+      name: [this.goods.name, [Validators.required, Validators.maxLength(200)]],
+      unitId: [this.goods.unitId, [Validators.required]],
+      goodsCategoryId: [this.goods.goodsCategoryId, [Validators.required]],
+      brand: [this.goods.brand, [Validators.maxLength(200)]],
+      color: [this.goods.color, [Validators.maxLength(200)]],
+      size: [this.goods.size, [Validators.maxLength(200)]],
+      isEdit: [this.isEdit],
+      isActive: [this.goods.isActive],
+      rowVersion: [this.goods.rowVersion],
+    });
+  }
+
+  getUnitList() {
+    //this.loading.showLoading(true);
+    this.unitService.listCombobox().subscribe((response: ResponseModel) => {
+      console.log(response.result);
+      if (response.responseStatus === ResponseStatus.warning) {
+        this.messageService.showWarning(response.errors.join(','));
+        ///this.loading.showLoading(false);
+      } else if (response.responseStatus === ResponseStatus.error) {
+        this.messageService.showError(response.errors.join(','));
+        //this.loading.showLoading(false);
+      } else {
+        this.unitList = response.result;
+        //this.loading.showLoading(false);
+      }
+    }, err => {
+      console.log(err);
+     // this.loading.showLoading(false);
+    });
+  }
+
+  getGoodsCategoryList() {
+    //this.loading.showLoading(true);
+    this.categoryService.listCombobox().subscribe((response: ResponseModel) => {
+      console.log(response.result);
+      if (response.responseStatus === ResponseStatus.warning) {
+        this.messageService.showWarning(response.errors.join(','));
+        ///this.loading.showLoading(false);
+      } else if (response.responseStatus === ResponseStatus.error) {
+        this.messageService.showError(response.errors.join(','));
+        //this.loading.showLoading(false);
+      } else {
+        this.categoryList = response.result;
+        //this.loading.showLoading(false);
+      }
+    }, err => {
+      console.log(err);
+    // this.loading.showLoading(false);
+    });
+  }
+
+  fileProgress(fileInput: any) {
+    this.fileData = <File>fileInput.target.files[0];
+    this.preview();
+  }
+
+  preview() {
+    // Show preview
+    var mineType = this.fileData.type;
+    if (mineType.match(/image\/*/) === null) {
+      return;
+    }
+
+    var reader = new FileReader();
+    reader.readAsDataURL(this.fileData);
+    reader.onload = (_) => {
+      this.previewUrl = reader.result;
+    }
+  }
+
+}
