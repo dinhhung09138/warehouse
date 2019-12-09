@@ -28,8 +28,6 @@ export class HeaderInterceptor implements HttpInterceptor {
       return next.handle(req);
     }
     const modified = this.setHeaders(req);
-    console.log('set header');
-    console.log(modified);
     return next.handle(modified);
   }
 }

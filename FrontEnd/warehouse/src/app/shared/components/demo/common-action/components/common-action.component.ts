@@ -30,15 +30,15 @@ export class CommonActionComponent implements OnInit {
   }
 
   onShowSuccessMessageButtonClick() {
-    this.showMessageService.showSuccess('Title', 'Message content');
+    this.showMessageService.showSuccess('Message content');
   }
 
   onWarningMessageButtonClick() {
-    this.showMessageService.showWarning('Title', 'Message content');
+    this.showMessageService.showWarning('Message content');
   }
 
   onShowErrorMessageButtonClick() {
-    this.showMessageService.showError('Title', 'Message content');
+    this.showMessageService.showError('Message content');
   }
   onShowLoadingButtonClick(){
     this.loading.showLoading(true);

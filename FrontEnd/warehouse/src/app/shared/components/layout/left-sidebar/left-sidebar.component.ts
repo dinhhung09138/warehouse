@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { SharedResource } from 'src/app/shared/shared.message';
 
 @Component({
   selector: 'app-left-sidebar',
@@ -6,6 +7,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./left-sidebar.component.css']
 })
 export class LeftSidebarComponent implements OnInit {
+
+  leftSidebarText = SharedResource.leftSidebar;
 
   constructor() { }
 

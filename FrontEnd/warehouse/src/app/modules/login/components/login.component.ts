@@ -41,10 +41,10 @@ export class LoginComponent implements OnInit {
       rememberMe: [localStorage.getItem('rememberMe') ? localStorage.getItem('rememberMe') : false],
     });
 
-    // if (this.context.isAuthenticated()) {
-    //     this.router.navigate(['/demo/datatable'], {});
-    //     return;
-    // }
+    if (this.context.isAuthenticated()) {
+        this.router.navigate(['/'], {});
+        return;
+    }
   }
 
   get f() { return this.loginForm.controls; }
@@ -74,7 +74,7 @@ export class LoginComponent implements OnInit {
         }
         this.context.saveToken(res.result);
         console.log('login success');
-        this.router.navigate(['/demo/datatable']);
+        this.router.navigate(['/']);
       }
       this.isLoading = false;
     }, err => {

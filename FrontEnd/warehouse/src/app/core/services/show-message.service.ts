@@ -1,21 +1,21 @@
 import { Injectable } from "@angular/core";
 import { MessageService } from 'primeng/api';
+import { SharedResource } from 'src/app/shared/shared.message';
 
 @Injectable()
 export class ShowMessageService {
 
   constructor(private messageService: MessageService) { }
 
-  showSuccess(title: string, message: string) {
-    this.messageService.add({severity: 'success', summary: title, detail: message});
+  showSuccess(message: string) {
+    this.messageService.add({severity: 'success', summary: SharedResource.messageTitle.info, detail: message, life: 5000});
+  };
+
+  showWarning(message: string) {
+    this.messageService.add({severity: 'warning', summary: SharedResource.messageTitle.warning, detail: message, life: 7000});
   }
 
-  showWarning(title: string, message: string) {
-    this.messageService.add({severity: 'warning', summary: title, detail: message});
+  showError(message: string) {
+    this.messageService.add({severity: 'error', summary: SharedResource.messageTitle.error, detail: message, life: 10000});
   }
-
-  showError(title: string, message: string) {
-    this.messageService.add({severity: 'error', summary: title, detail: message});
-  }
-
 }
