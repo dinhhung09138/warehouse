@@ -82,7 +82,7 @@ namespace WareHouse.API
         }
 
         /// <summary>
-        /// Update active status goods unit.
+        /// Update active status goods.
         /// </summary>
         /// <param name="model">Goods model.</param>
         /// <returns>IActionResult.</returns>

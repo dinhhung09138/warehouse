@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ResponseModel } from 'src/app/core/models/response.model';
 import { map } from 'rxjs/operators';
-import { CustomerModel } from 'src/app/modules/admin/customer/models/customer.model';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ApiSetting } from 'src/app/core/api-setting';
