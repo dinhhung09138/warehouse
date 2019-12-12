@@ -295,6 +295,33 @@ button.print-button {
     border-width: 5px 5px 2.5px;
 }
 
+.ui-calendar {
+    width: calc(100% - 32px);
+}
+
+body .ui-calendar.ui-calendar-w-btn .ui-inputtext {
+    width: 100%;
+}
+
+body .ui-calendar.ui-calendar-w-btn .ui-datepicker-trigger.ui-button {
+    position: absolute;
+}
+
+body .ui-button {
+    background-color: #31701e;
+    border: 1px solid #31701e;
+}
+
+body .ui-datepicker table td>a.ui-state-active,
+body .ui-datepicker table td>span.ui-state-active {
+    background-color: #31701e;
+}
+
+body .ui-datepicker table td>a:hover {
+    color: White !important;
+    background-color: #31701e !important;
+}
+
 
 /* ----------------- End Control ----------------- */
 

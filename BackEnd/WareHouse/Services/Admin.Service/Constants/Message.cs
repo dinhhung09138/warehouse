@@ -12,5 +12,6 @@
         public const string EmployeeIsRequired = "Employee is required";
         public const string EmployeeHasAnAccount = "Employee has a login account";
         public const string AccountNotfound = "Account not found";
+        public const string CodeIsExists = "Code is exists";
     }
 }

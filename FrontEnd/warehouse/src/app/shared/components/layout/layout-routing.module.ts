@@ -34,6 +34,11 @@ const routes: Routes = [
     component: LayoutComponent,
     loadChildren: () => import('../../../modules/warehouse/goods/goods.module').then(m => m.GoodsModule),
   },
+  {
+    path: 'admin/employee',
+    component: LayoutComponent,
+    loadChildren: () => import('../../../modules/admin/employee/employee.module').then(m => m.EmployeeModule),
+  },
 ];
 
 @NgModule({

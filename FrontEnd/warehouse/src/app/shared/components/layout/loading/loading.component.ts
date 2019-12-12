@@ -13,7 +13,12 @@ export class LoadingComponent implements OnInit {
   constructor(private loadingService: LoadingService) { }
 
   ngOnInit() {
-    this.loadingService.loadingStatus.subscribe(status => this.showLoading = status);
+    this.loadingService.loadingStatus.subscribe(status => {
+      setTimeout(() => {
+        this.showLoading = status;
+      }, 1);
+    });
+
   }
 
 }
