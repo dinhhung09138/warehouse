@@ -47,6 +47,11 @@ namespace Warehouse.DataAccess
         public virtual DbSet<CustomerStore> CustomerStore { get; set; }
 
         /// <summary>
+        /// Department table.
+        /// </summary>
+        public virtual DbSet<Department> Department { get; set; }
+
+        /// <summary>
         /// Employee table.
         /// </summary>
         public virtual DbSet<Employee> Employee { get; set; }
@@ -164,6 +169,7 @@ namespace Warehouse.DataAccess
             MappingCustomerTable(modelBuilder);
             MappingCustomerEmployeeTable(modelBuilder);
             MappingCustomerStoreTable(modelBuilder);
+            MappingDepartmentTable(modelBuilder);
             MappingEmployeeTable(modelBuilder);
             MappingFeeTable(modelBuilder);
             MappingFileTable(modelBuilder);
@@ -217,7 +223,7 @@ namespace Warehouse.DataAccess
                             .HasColumnName("Name")
                             .HasMaxLength(200)
                             .IsRequired(true)
-                            .IsUnicode(false);
+                            .IsUnicode(true);
 
                 entity.Property(e => e.IsActive)
                             .HasColumnName("IsActive")
@@ -293,7 +299,7 @@ namespace Warehouse.DataAccess
                             .HasColumnName("Name")
                             .HasMaxLength(200)
                             .IsRequired(true)
-                            .IsUnicode(false);
+                            .IsUnicode(true);
 
                 entity.Property(e => e.IsActive)
                             .HasColumnName("IsActive")
@@ -391,6 +397,11 @@ namespace Warehouse.DataAccess
                             .HasMaxLength(50)
                             .IsUnicode(false);
 
+                entity.Property(e => e.Email)
+                            .HasColumnName("Email")
+                            .HasMaxLength(50)
+                            .IsUnicode(false);
+
                 entity.Property(e => e.IsCompany)
                             .HasColumnName("IsCompany")
                             .HasMaxLength(20)
@@ -411,8 +422,8 @@ namespace Warehouse.DataAccess
                             .HasMaxLength(300)
                             .IsUnicode(true);
 
-                entity.Property(e => e.CitiId)
-                            .HasColumnName("CitiId")
+                entity.Property(e => e.CityId)
+                            .HasColumnName("CityId")
                             .HasColumnType("uniqueidentifier")
                             .IsRequired(false);
 
@@ -426,6 +437,21 @@ namespace Warehouse.DataAccess
 
                 entity.Property(e => e.Latitude)
                             .HasColumnName("Latitude");
+
+                entity.Property(e => e.ContactName)
+                            .HasColumnName("ContactName")
+                            .HasMaxLength(50)
+                            .IsUnicode(true);
+
+                entity.Property(e => e.ContactPhone)
+                            .HasColumnName("ContactPhone")
+                            .HasMaxLength(50)
+                            .IsUnicode(false);
+
+                entity.Property(e => e.ContactEmail)
+                            .HasColumnName("ContactEmail")
+                            .HasMaxLength(50)
+                            .IsUnicode(false);
 
                 entity.Property(e => e.IsActive)
                             .HasColumnName("IsActive")
@@ -598,7 +624,7 @@ namespace Warehouse.DataAccess
                             .HasColumnName("Name")
                             .HasMaxLength(300)
                             .IsRequired(true)
-                            .IsUnicode(false);
+                            .IsUnicode(true);
 
                 entity.Property(e => e.PrimaryPhone)
                             .HasColumnName("PrimaryPhone")
@@ -699,6 +725,72 @@ namespace Warehouse.DataAccess
             });
         }
 
+        private void MappingDepartmentTable(ModelBuilder builder)
+        {
+            builder.Entity<Department>(entity =>
+            {
+                entity.HasKey(e => e.Id).ForSqlServerIsClustered(true);
+                
+                entity.Property(e => e.Id)
+                            .HasColumnName("Id")
+                            .HasColumnType("uniqueidentifier")
+                            .IsRequired(true);
+                
+                entity.Property(e => e.Name)
+                            .HasColumnName("Name")
+                            .HasMaxLength(200)
+                            .IsRequired(true)
+                            .IsUnicode(true);
+
+                entity.Property(e => e.IsActive)
+                            .HasColumnName("IsActive")
+                            .IsRequired(true)
+                            .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.CreateBy)
+                            .HasColumnName("CreateBy")
+                            .HasMaxLength(50)
+                            .IsRequired(true);
+
+                entity.Property(e => e.CreateDate)
+                            .HasColumnName("CreateDate")
+                            .HasColumnType("datetime")
+                            .IsRequired(true)
+                            .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.UpdateBy)
+                            .HasColumnName("UpdateBy")
+                            .HasMaxLength(50)
+                            .IsRequired(false);
+
+                entity.Property(e => e.UpdateDate)
+                            .HasColumnName("UpdateDate")
+                            .HasColumnType("datetime")
+                            .IsRequired(false)
+                            .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.Deleted)
+                            .HasColumnName("Deleted")
+                            .IsRequired(true)
+                            .HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.DeleteBy)
+                            .HasColumnName("DeleteBy")
+                            .HasColumnType("varchar(50)")
+                            .IsRequired(false);
+
+                entity.Property(e => e.DeleteDate)
+                            .HasColumnName("DeleteDate")
+                            .HasColumnType("datetime")
+                            .IsRequired(false);
+
+                entity.Property(e => e.RowVersion)
+                            .HasColumnName("RowVersion")
+                            .IsRequired()
+                            .IsRowVersion();
+            });
+        }
+
         private void MappingEmployeeTable(ModelBuilder builder)
         {
             builder.Entity<Employee>(entity =>
@@ -723,7 +815,7 @@ namespace Warehouse.DataAccess
                             .HasColumnName("Name")
                             .HasMaxLength(200)
                             .IsRequired(true)
-                            .IsUnicode(false);
+                            .IsUnicode(true);
 
                 entity.Property(e => e.AvatarFileId)
                             .HasColumnName("AvatarFileId")

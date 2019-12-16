@@ -38,6 +38,11 @@ namespace Warehouse.DataAccess
         ITableGenericRepository<CustomerStore> CustomerStoreRepository { get; }
 
         /// <summary>
+        /// Department table repository.
+        /// </summary>
+        ITableGenericRepository<Department> DepartmentRepository { get; }
+
+        /// <summary>
         /// Employee table repository.
         /// </summary>
         ITableGenericRepository<Employee> EmployeeRepository { get; }

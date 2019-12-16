@@ -115,6 +115,22 @@ namespace Warehouse.DataAccess
         }
 
         /// <summary>
+        /// Department table repository.
+        /// </summary>
+        private ITableGenericRepository<Department> _departmentRepository;
+
+        /// <summary>
+        /// Department table repository.
+        /// </summary>
+        public ITableGenericRepository<Department> DepartmentRepository
+        {
+            get
+            {
+                return this._departmentRepository = this._departmentRepository ?? new TableGenericRepository<Department>(this._context);
+            }
+        }
+
+        /// <summary>
         /// Employee table repository.
         /// </summary>
         private ITableGenericRepository<Employee> _employeeRepository;
