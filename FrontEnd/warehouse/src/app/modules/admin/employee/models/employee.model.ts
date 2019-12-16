@@ -11,6 +11,7 @@ export class EmployeeModel {
   dateOfLeaving: Date;
   email: string;
   departmentId: string;
+  departmentName: string;
   isEdit: boolean;
   isActive: boolean;
   rowVersion: any;
@@ -27,6 +28,7 @@ export class EmployeeModel {
     this.dateOfLeaving = null;
     this.email = '';
     this.departmentId = '';
+    this.departmentName = '';
     this.isEdit = isEdit;
     this.isActive = true;
   }

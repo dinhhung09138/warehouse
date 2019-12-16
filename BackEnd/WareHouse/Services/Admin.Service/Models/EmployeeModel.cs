@@ -16,6 +16,7 @@ namespace Admin.Service.Models
         [MaxLength(20)]
         public string Code { get; set; }
 
+        [Required]
         [MaxLength(200)]
         public string Name { get; set; }
 
@@ -37,7 +38,10 @@ namespace Admin.Service.Models
         [MaxLength(50)]
         public string Email { get; set; }
 
+        [Required]
         public string DepartmentId { get; set; }
+
+        public string DepartmentName { get; set; }
 
         public bool IsActive { get; set; }
 

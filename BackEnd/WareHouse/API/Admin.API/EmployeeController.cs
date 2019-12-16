@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Admin.API
 {
     /// <summary>
-    /// Goods controller.
+    /// Employee controller.
     /// </summary>
     [Route("api/admin/employee")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -48,7 +48,7 @@ namespace Admin.API
         /// <summary>
         /// Get employee by id.
         /// </summary>
-        /// <param name="id">employee's id.</param>
+        /// <param name="id">Employee's id.</param>
         /// <returns>IActionResult.</returns>
         [HttpGet]
         [Route("detail/{id}")]
@@ -61,7 +61,7 @@ namespace Admin.API
         /// <summary>
         /// Save employee.
         /// </summary>
-        /// <param name="model">employee model.</param>
+        /// <param name="model">Employee model.</param>
         /// <returns>IActionResult.</returns>
         [HttpPost]
         [Route("save")]
@@ -78,7 +78,7 @@ namespace Admin.API
         }
 
         /// <summary>
-        /// Update active status employee.
+        /// Update active status of employee.
         /// </summary>
         /// <param name="model">Employee model.</param>
         /// <returns>IActionResult.</returns>

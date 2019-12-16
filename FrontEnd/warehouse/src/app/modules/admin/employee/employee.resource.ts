@@ -6,6 +6,7 @@ export class EmployeeResource {
     table: {
       code: 'Code',
       name: 'Name',
+      departmentName: 'Department',
       mobile: 'Mobile',
       email: 'Email',
       active: 'Active',
@@ -20,7 +21,8 @@ export class EmployeeResource {
   };
 
   static readonly form = {
-    title: 'Employee',
+    titleCreate: 'Create Employee',
+    titleEdit: 'Edit Employee',
     form: {
       code: 'Code',
       name: 'Name',
@@ -36,6 +38,8 @@ export class EmployeeResource {
     message: {
       code: 'Code is required',
       name: 'Name is required',
+      departmentId: 'Department is required',
+      dateOfJoin: 'Date of join is required',
       saveSuccess: SharedResource.formMessage.saveSuccess,
     },
   };

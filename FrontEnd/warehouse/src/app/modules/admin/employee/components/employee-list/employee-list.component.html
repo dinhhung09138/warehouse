@@ -7,7 +7,7 @@
     </div>
 </div>
 <div class="card-body p-2">
-    <p-table [value]="list" [columns]="tableColumn" [customSort]="true" (sortFunction)="onSort($event)" emptymessage="No data">
+    <p-table [value]="list" [customSort]="true" (sortFunction)="onSort($event)" emptymessage="No data">
         <ng-template pTemplate="caption">
             <p-toolbar>
                 <div class="ui-toolbar-group-right">
@@ -25,6 +25,10 @@
                 <th [pSortableColumn]="'name'">
                     {{ formMessage.table.name }}
                     <p-sortIcon [field]="'name'"></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'departmentName'">
+                    {{ formMessage.table.departmentName }}
+                    <p-sortIcon [field]="'departmentName'"></p-sortIcon>
                 </th>
                 <th [pSortableColumn]="'mobile'">
                     {{ formMessage.table.mobile }}
@@ -44,6 +48,7 @@
             <tr>
                 <td>{{ item.code }}</td>
                 <td>{{ item.name }}</td>
+                <td>{{ item.departmentName }}</td>
                 <td>{{ item.mobile }}</td>
                 <td>{{ item.email }}</td>
                 <td class="text-center">
@@ -62,7 +67,7 @@
         </ng-template>
         <ng-template pTemplate="emptymessage">
             <tr>
-                <td [attr.colspan]="tableColumn.length" class="text-center">{{ formMessage.message.nodata }}</td>
+                <td [attr.colspan]="7" class="text-center">{{ formMessage.message.nodata }}</td>
             </tr>
         </ng-template>
         <ng-template pTemplate="summary">

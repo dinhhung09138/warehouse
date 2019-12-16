@@ -43,7 +43,7 @@ namespace Admin.Service
         }
 
         /// <summary>
-        /// Get list of employee unit data.
+        /// Get list of employee data.
         /// </summary>
         /// <param name="filter">Filter model.</param>
         /// <returns>ResponseModel object.</returns>
@@ -57,18 +57,23 @@ namespace Admin.Service
                     throw new Exception(CommonMessage.ParameterInvalid);
                 }
 
-                var query = _context.EmployeeRepository.Query()
-                                                   .Where(m => m.Deleted == false)
-                                                   .Select(m => new EmployeeModel
-                                                   {
-                                                       Id = m.Id.ToString(),
-                                                       Code = m.Code,
-                                                       Name = m.Name,
-                                                       Mobile = m.Mobile,
-                                                       Email = m.Email,
-                                                       IsActive = m.IsActive,
-                                                       RowVersion = m.RowVersion,
-                                                   });
+                var query = from empl in _context.EmployeeRepository.Query()
+                            join dept in _context.DepartmentRepository.Query()
+                            on empl.DepartmentId equals dept.Id
+                            into departments
+                            from dept in departments.DefaultIfEmpty()
+                            where empl.Deleted == false
+                            select new EmployeeModel
+                            {
+                                Id = empl.Id.ToString(),
+                                Code = empl.Code,
+                                Name = empl.Name,
+                                Mobile = empl.Mobile,
+                                Email = empl.Email,
+                                DepartmentName = dept.Name,
+                                IsActive = empl.IsActive,
+                                RowVersion = empl.RowVersion,
+                            };
 
                 if (filter.Text.Length > 0)
                 {
@@ -102,7 +107,7 @@ namespace Admin.Service
                                                    .Where(m => m.Deleted == false && m.IsActive == true)
                                                    .Select(m => new SelectedItemModel
                                                    {
-                                                       Value = m.Id.ToString(),
+                                                       Value = m.Id.ToString().ToLower(),
                                                        Title = m.Name,
                                                    });
 
@@ -147,7 +152,7 @@ namespace Admin.Service
                 md.DateOfJoin = item.DateOfJoin;
                 md.DateOfLeaving = item.DateOfLeaving;
                 md.Email = item.Email;
-                md.DepartmentId = item.DepartmentId.HasValue ? string.Empty : item.DepartmentId.ToString();
+                md.DepartmentId = !item.DepartmentId.HasValue ? string.Empty : item.DepartmentId.ToString();
                 md.IsActive = item.IsActive;
                 md.RowVersion = item.RowVersion;
 
@@ -226,10 +231,10 @@ namespace Admin.Service
                             Mobile = model.Mobile,
                             WorkPhone = model.WorkPhone,
                             Fax = model.Fax,
-                            DateOfJoin = model.DateOfJoin,
-                            DateOfLeaving = model.DateOfLeaving,
+                            DateOfJoin = model.DateOfJoin.ToLocalTime(),
+                            DateOfLeaving = model.DateOfLeaving.HasValue ? model.DateOfLeaving.Value.ToLocalTime() : model.DateOfLeaving,
                             Email = model.Email,
-                            DepartmentId = null, //TODO
+                            DepartmentId = (model.DepartmentId.Length > 0 ? new Guid(model.DepartmentId) : default(Guid)),
                             IsActive = model.IsActive,
                             UpdateBy = model.CurrentUserId,
                             UpdateDate = DateTime.Now,
@@ -254,10 +259,10 @@ namespace Admin.Service
                         Mobile = model.Mobile,
                         WorkPhone = model.WorkPhone,
                         Fax = model.Fax,
-                        DateOfJoin = model.DateOfJoin,
-                        DateOfLeaving = model.DateOfLeaving,
+                        DateOfJoin = model.DateOfJoin.ToLocalTime(),
+                        DateOfLeaving = model.DateOfLeaving.HasValue ? model.DateOfLeaving.Value.ToLocalTime() : model.DateOfLeaving,
                         Email = model.Email,
-                        DepartmentId = null, //TODO
+                        DepartmentId = (model.DepartmentId.Length > 0 ? new Guid(model.DepartmentId) : default(Guid)),
                         IsActive = model.IsActive,
                         CreateBy = model.CurrentUserId,
                         CreateDate = DateTime.Now,

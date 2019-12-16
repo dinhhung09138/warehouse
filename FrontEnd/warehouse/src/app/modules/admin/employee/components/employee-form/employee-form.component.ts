@@ -8,6 +8,9 @@ import { ResponseModel } from 'src/app/core/models/response.model';
 import { ResponseStatus } from 'src/app/core/enums/response.enum';
 import { LoadingService } from 'src/app/core/services/loading.service';
 import { ShowMessageService } from 'src/app/core/services/show-message.service';
+import { AppLicationSetting } from 'src/app/core/config/appication-setting.config';
+import { ItemSelectModel } from 'src/app/core/models/item-select.model';
+import { DepartmentService } from '../../../department/services/department.service';
 
 @Component({
   selector: 'app-employee-form',
@@ -23,14 +26,20 @@ export class EmployeeFormComponent implements OnInit {
   formMessage = EmployeeResource.form;
   employeeForm: FormGroup;
   warningMessage: any[];
+  departmentLoading = false;
+  departmentList: ItemSelectModel[] = [];
+
+  vnDate = AppLicationSetting.timeZoneSetting;
 
   constructor(public activeModal: NgbActiveModal,
               private fb: FormBuilder,
               private loading: LoadingService,
               private messageService: ShowMessageService,
-              private employeeService: EmployeeService) { }
+              private employeeService: EmployeeService,
+              private departmentService: DepartmentService) { }
 
   ngOnInit() {
+    this.getDepartmentList();
     if (this.isEdit == false) {
       this.employee = new EmployeeModel(this.isEdit);
     }
@@ -85,7 +94,8 @@ export class EmployeeFormComponent implements OnInit {
       workPhone: [this.employee.workPhone, [Validators.maxLength(20)]],
       fax: [this.employee.fax, [Validators.maxLength(20)]],
       email: [this.employee.email, [Validators.maxLength(50)]],
-      dateOfJoin: [this.employee.dateOfJoin ? new Date(this.employee.dateOfJoin) : null],
+      departmentId: [this.employee.departmentId, [Validators.required]],
+      dateOfJoin: [this.employee.dateOfJoin ? new Date(this.employee.dateOfJoin) : null, [Validators.required]],
       dateOfLeaving: [this.employee.dateOfLeaving ? new Date(this.employee.dateOfLeaving) : null],
       isEdit: [this.isEdit],
       isActive: [this.employee.isActive],
@@ -108,7 +118,6 @@ export class EmployeeFormComponent implements OnInit {
         this.loading.showLoading(false);
       } else {
         this.employee = response.result;
-        console.log(this.employee);
         this.employeeForm.patchValue({
           id: response.result.id,
           code: response.result.code,
@@ -117,6 +126,7 @@ export class EmployeeFormComponent implements OnInit {
           workPhone: response.result.workPhone,
           fax: response.result.fax,
           email: response.result.email,
+          departmentId: response.result.departmentId,
           dateOfJoin: new Date(response.result.dateOfJoin),
           dateOfLeaving: response.result.dateOfLeaving ? new Date(response.result.dateOfLeaving) : null,
           isEdit: this.isEdit,
@@ -131,4 +141,21 @@ export class EmployeeFormComponent implements OnInit {
     });
   }
 
+  getDepartmentList() {
+    this.departmentLoading = true;
+    this.departmentService.listCombobox().subscribe((response: ResponseModel) => {
+
+      if (response.responseStatus === ResponseStatus.warning) {
+        this.messageService.showWarning(response.errors.join(','));
+      } else if (response.responseStatus === ResponseStatus.error) {
+        this.messageService.showError(response.errors.join(','));
+      } else {
+        this.departmentList = response.result;
+      }
+      this.departmentLoading = false;
+    }, err => {
+      console.log(err);
+      this.departmentLoading = false;
+    });
+  }
 }

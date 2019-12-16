@@ -13,6 +13,8 @@ import { NgbModalModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MessagesModule } from 'primeng/messages';
 import { CalendarModule } from 'primeng/calendar';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { DepartmentService } from '../department/services/department.service';
 
 
 const routes: Routes = [
@@ -29,12 +31,14 @@ const routes: Routes = [
   ],
   providers: [
     EmployeeService,
+    DepartmentService,
   ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     RouterModule.forChild(routes),
+    NgSelectModule,
     NgbModule,
     TableModule,
     CalendarModule,
