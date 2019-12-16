@@ -191,6 +191,10 @@ body .ui-table .ui-table-summary {
     color: #fff;
 }
 
+.card-header>.card-tools {
+    margin-right: unset;
+}
+
 
 /* ----------------- End Card ----------------- */
 
@@ -328,8 +332,20 @@ body .ui-datepicker table td>a:hover {
 
 /* ----------------- Table ----------------- */
 
+.wh-80 {
+    width: 80px;
+}
+
 .wh-100 {
     width: 100px;
+}
+
+.wh-120 {
+    width: 120px;
+}
+
+.wh-150 {
+    width: 150px;
 }
 
 .wh-200 {
@@ -338,10 +354,6 @@ body .ui-datepicker table td>a:hover {
 
 .wh-300 {
     width: 300px;
-}
-
-.wh-80 {
-    width: 80px;
 }
 
 

@@ -35,9 +35,29 @@ const routes: Routes = [
     loadChildren: () => import('../../../modules/warehouse/goods/goods.module').then(m => m.GoodsModule),
   },
   {
+    path: 'admin/country',
+    component: LayoutComponent,
+    loadChildren: () => import('../../../modules/admin/country/country.module').then(m => m.CountryModule),
+  },
+  {
+    path: 'admin/city',
+    component: LayoutComponent,
+    loadChildren: () => import('../../../modules/admin/city/city.module').then(m => m.CityModule),
+  },
+  {
+    path: 'admin/department',
+    component: LayoutComponent,
+    loadChildren: () => import('../../../modules/admin/department/department.module').then(m => m.DepartmentModule),
+  },
+  {
     path: 'admin/employee',
     component: LayoutComponent,
     loadChildren: () => import('../../../modules/admin/employee/employee.module').then(m => m.EmployeeModule),
+  },
+  {
+    path: 'customer',
+    component: LayoutComponent,
+    loadChildren: () => import('../../../modules/customer/customer/customer.module').then(m => m.CustomerModule),
   },
 ];
 
