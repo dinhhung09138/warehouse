@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Core.Common.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +13,7 @@ namespace Customer.API
     /// <summary>
     /// Customer controller.
     /// </summary>
-    [Route("api/admin/customer")]
+    [Route("api/customer")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CustomerController : BaseController
     {
@@ -46,13 +44,38 @@ namespace Customer.API
         }
 
         /// <summary>
-        /// Create new customer.
+        /// Get list of customer to show on combobox.
+        /// </summary>
+        /// <returns>IActionResult.</returns>
+        [HttpGet]
+        [Route("list-combobox")]
+        public async Task<IActionResult> ListCombobox()
+        {
+            var response = await _customerService.ListCombobox().ConfigureAwait(false);
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Get customer by id.
+        /// </summary>
+        /// <param name="id">Customer's id.</param>
+        /// <returns>IActionResult.</returns>
+        [HttpGet]
+        [Route("detail/{id}")]
+        public async Task<IActionResult> Detail([FromRoute] string id)
+        {
+            var response = await _customerService.Detail(new Guid(id)).ConfigureAwait(false);
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Save customer.
         /// </summary>
         /// <param name="model">Customer model.</param>
         /// <returns>IActionResult.</returns>
         [HttpPost]
-        [Route("create")]
-        public async Task<IActionResult> Create(CustomerModel model)
+        [Route("save")]
+        public async Task<IActionResult> Save(CustomerModel model)
         {
             if (model != null)
             {
@@ -86,7 +109,7 @@ namespace Customer.API
         /// </summary>
         /// <param name="model">Customer model.</param>
         /// <returns>IActionResult.</returns>
-        [HttpDelete]
+        [HttpPut]
         [Route("delete")]
         public async Task<IActionResult> Delete(CustomerModel model)
         {

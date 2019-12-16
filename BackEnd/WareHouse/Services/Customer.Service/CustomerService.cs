@@ -2,14 +2,14 @@
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Customer.Service.Interfaces;
+using Customer.Service.Models;
 using Core.Common.Extensions;
 using Core.Common.Messages;
 using Core.Common.Models;
 using Core.Common.Services.Interfaces;
-using Customer.Service.Interfaces;
-using Customer.Service.Models;
+using Microsoft.EntityFrameworkCore;
 using Warehouse.DataAccess;
-using Warehouse.DataAccess.Entities;
 using Z.EntityFramework.Plus;
 
 namespace Customer.Service
@@ -32,8 +32,8 @@ namespace Customer.Service
         /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
-        /// <param name="context">data context.</param>
-        /// <param name="logger">log service.</param>
+        /// <param name="context">Data context.</param>
+        /// <param name="logger">Log service.</param>
         public CustomerService(IWareHouseUnitOfWork context, ILoggerService logger)
         {
             _context = context;
@@ -41,7 +41,7 @@ namespace Customer.Service
         }
 
         /// <summary>
-        /// Get list of customer data.
+        /// Get list of employee data.
         /// </summary>
         /// <param name="filter">Filter model.</param>
         /// <returns>ResponseModel object.</returns>
@@ -55,44 +55,79 @@ namespace Customer.Service
                     throw new Exception(CommonMessage.ParameterInvalid);
                 }
 
-                var query = _context.CustomerRepository.Query()
-                                                   .Where(m => m.Deleted == false)
-                                                   .Select(m => new CustomerModel
-                                                   {
-                                                       Id = m.Id,
-                                                       LogoFileId = m.LogoFileId,
-                                                       Name = m.Name,
-                                                       PrimaryPhone = m.PrimaryPhone,
-                                                       Website = m.Website,
-                                                       IsCompany = m.IsCompany,
-                                                       StartOn = m.StartOn,
-                                                       IsActive = m.IsActive,
-                                                       RowVersion = m.RowVersion,
-                                                   });
+                var query = from cus in _context.CustomerRepository.Query()
+                            join country in _context.CountryRepository.Query() on cus.CountryId equals country.Id
+                            into countries
+                            from country in countries.DefaultIfEmpty()
+                            join city in _context.CityRepository.Query() on cus.CityId equals city.Id
+                            into cities
+                            from city in cities.DefaultIfEmpty()
+                            where cus.Deleted == false
+                            select new CustomerModel
+                            {
+                                Id = cus.Id.ToString(),
+                                Name = cus.Name,
+                                PrimaryPhone = cus.PrimaryPhone,
+                                Fax = cus.Fax,
+                                Email = cus.Email,
+                                Website = cus.Website,
+                                IsCompany = cus.IsCompany,
+                                ContactName = cus.ContactName,
+                                ContactPhone = cus.ContactPhone,
+                                ContactEmail = cus.ContactEmail,
+                                StartOn = cus.StartOn,
+                                Address = cus.Address,
+                                IsActive = cus.IsActive,
+                                CountryId = country.Id != null ? country.Id.ToString() : string.Empty,
+                                CountryName = country.Id != null ? country.Name.ToString() : string.Empty,
+                                CityId = city.Id != null ? city.Id.ToString() : string.Empty,
+                                CityName = city.Id != null ? city.Name.ToString() : string.Empty,
+                            };
 
                 if (filter.Text.Length > 0)
                 {
                     query = query.Where(m => m.Name.ToLower().Contains(filter.Text)
                                             || m.PrimaryPhone.ToLower().Contains(filter.Text)
+                                            || m.Fax.ToLower().Contains(filter.Text)
                                             || m.Website.ToLower().Contains(filter.Text)
-                                            || m.Name.ToLower().Contains(filter.Text)
-                                            || m.Name.ToLower().Contains(filter.Text));
+                                            || m.Address.ToLower().Contains(filter.Text));
                 }
 
-                if (filter.Sort != null)
-                {
-                    query = query.SortBy(filter.Sort);
-                }
-                else
-                {
-                    query = query.OrderBy(m => m.Name);
-                }
+                query = query.OrderBy(m => m.StartOn);
 
                 response.Result = await query.ToBaseList(filter.Paging?.PageIndex, filter.Paging?.PageSize).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 _logger.AddErrorLog(this.GetType().Name, MethodBase.GetCurrentMethod().Name, filter, ex);
+                response.ResponseStatus = Core.Common.Enums.ResponseStatus.Error;
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Get list of custoer data to show on combobox.
+        /// </summary>
+        /// <returns>ResponseModel object.</returns>
+        public async Task<ResponseModel> ListCombobox()
+        {
+            var response = new ResponseModel();
+            try
+            {
+                var query = _context.CustomerRepository.Query()
+                                                   .Where(m => m.Deleted == false && m.IsActive == true)
+                                                   .Select(m => new SelectedItemModel
+                                                   {
+                                                       Value = m.Id.ToString(),
+                                                       Title = m.Name,
+                                                   });
+
+                response.Result = await query.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.AddErrorLog(this.GetType().Name, MethodBase.GetCurrentMethod().Name, ex);
                 response.ResponseStatus = Core.Common.Enums.ResponseStatus.Error;
             }
 
@@ -119,20 +154,24 @@ namespace Customer.Service
                 }
 
                 CustomerModel md = new CustomerModel();
-                md.Id = item.Id;
+                md.Id = item.Id.ToString();
                 md.Name = item.Name;
-                md.LogoFileId = item.LogoFileId;
+                md.LogoFileId = item.LogoFileId.HasValue ? string.Empty : item.LogoFileId.ToString();
                 md.PrimaryPhone = item.PrimaryPhone;
                 md.SecondaryPhone = item.SecondaryPhone;
                 md.Fax = item.Fax;
                 md.Website = item.Website;
                 md.TaxCode = item.TaxCode;
+                md.Email = item.Email;
+                md.ContactName = item.ContactName;
+                md.ContactPhone = item.ContactPhone;
+                md.ContactEmail = item.ContactEmail;
                 md.IsCompany = item.IsCompany;
                 md.StartOn = item.StartOn;
                 md.Description = item.Description;
                 md.Address = item.Address;
-                md.CitiId = item.CitiId;
-                md.CountryId = item.CountryId;
+                md.CityId = !item.CityId.HasValue ? string.Empty : item.CityId.ToString();
+                md.CountryId = !item.CountryId.HasValue ? string.Empty : item.CountryId.ToString();
                 md.Longtitue = item.Longtitue;
                 md.Latitude = item.Latitude;
                 md.IsActive = item.IsActive;
@@ -166,8 +205,10 @@ namespace Customer.Service
 
                 if (model.IsEdit)
                 {
+                    Guid id = new Guid(model.Id);
+
                     var checkExists = await _context.CustomerRepository
-                                                        .AnyAsync(m => m.Id == model.Id)
+                                                        .AnyAsync(m => m.Id == id)
                                                         .ConfigureAwait(false);
 
                     if (!checkExists)
@@ -178,11 +219,11 @@ namespace Customer.Service
                     }
 
                     var checkCurrent = await _context.CustomerRepository
-                                                        .AnyAsync(m => m.Id == model.Id
-                                                                       && m.RowVersion == model.RowVersion)
+                                                        .AnyAsync(m => m.Id == id
+                                                                       && m.RowVersion != model.RowVersion)
                                                         .ConfigureAwait(false);
 
-                    if (!checkCurrent)
+                    if (checkCurrent)
                     {
                         response.Errors.Add(CommonMessage.DataUpdatedByOtherUser);
                         response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
@@ -190,48 +231,57 @@ namespace Customer.Service
                     }
 
                     await _context.CustomerRepository.Query()
-                                                     .Where(m => m.Id == model.Id)
-                                                     .UpdateAsync(m => new Warehouse.DataAccess.Entities.Customer()
-                                                     {
-                                                         Name = model.Name,
-                                                         LogoFileId = model.LogoFileId,
-                                                         PrimaryPhone = model.PrimaryPhone,
-                                                         SecondaryPhone = model.SecondaryPhone,
-                                                         Fax = model.Fax,
-                                                         Website = model.Website,
-                                                         TaxCode = model.TaxCode,
-                                                         IsCompany = model.IsCompany,
-                                                         StartOn = model.StartOn,
-                                                         Description = model.Description,
-                                                         Address = model.Address,
-                                                         CitiId = model.CitiId,
-                                                         CountryId = model.CountryId,
-                                                         Longtitue = model.Longtitue,
-                                                         Latitude = model.Latitude,
-                                                         IsActive = model.IsActive,
-                                                         UpdateBy = model.CurrentUserId,
-                                                         UpdateDate = DateTime.Now,
-                                                     }).ConfigureAwait(true);
+                        .Where(m => m.Id == id)
+                        .UpdateAsync(m => new Warehouse.DataAccess.Entities.Customer()
+                        {
+                            Name = model.Name,
+                            LogoFileId = null, // TOOD
+                            PrimaryPhone = model.PrimaryPhone,
+                            SecondaryPhone = model.SecondaryPhone,
+                            Fax = model.Fax,
+                            Website = model.Website,
+                            TaxCode = model.TaxCode,
+                            Email = model.Email,
+                            IsCompany = model.IsCompany,
+                            StartOn = model.StartOn.HasValue ? model.StartOn.Value.ToLocalTime() : model.StartOn,
+                            Description = model.Description,
+                            Address = model.Address,
+                            Longtitue = model.Longtitue,
+                            Latitude = model.Latitude,
+                            ContactName = model.ContactName,
+                            ContactPhone = model.ContactPhone,
+                            ContactEmail = model.ContactEmail,
+                            CityId = (model.CityId.Length > 0 ? new Guid(model.CityId) : default(Guid)),
+                            CountryId = (model.CountryId.Length > 0 ? new Guid(model.CountryId) : default(Guid)),
+                            IsActive = model.IsActive,
+                            UpdateBy = model.CurrentUserId,
+                            UpdateDate = DateTime.Now,
+                        }).ConfigureAwait(true);
                 }
                 else
                 {
                     await _context.CustomerRepository.AddAsync(new Warehouse.DataAccess.Entities.Customer()
                     {
                         Id = Guid.NewGuid(),
-                        LogoFileId = model.LogoFileId,
+                        Name = model.Name,
+                        LogoFileId = null, // TOOD
                         PrimaryPhone = model.PrimaryPhone,
                         SecondaryPhone = model.SecondaryPhone,
                         Fax = model.Fax,
                         Website = model.Website,
                         TaxCode = model.TaxCode,
+                        Email = model.Email,
                         IsCompany = model.IsCompany,
-                        StartOn = model.StartOn,
+                        StartOn = model.StartOn.HasValue ? model.StartOn.Value.ToLocalTime() : model.StartOn,
                         Description = model.Description,
                         Address = model.Address,
-                        CitiId = model.CitiId,
-                        CountryId = model.CountryId,
                         Longtitue = model.Longtitue,
                         Latitude = model.Latitude,
+                        ContactName = model.ContactName,
+                        ContactPhone = model.ContactPhone,
+                        ContactEmail = model.ContactEmail,
+                        CityId = (model.CityId.Length > 0 ? new Guid(model.CityId) : default(Guid)),
+                        CountryId = (model.CountryId.Length > 0 ? new Guid(model.CountryId) : default(Guid)),
                         IsActive = model.IsActive,
                         CreateBy = model.CurrentUserId,
                         CreateDate = DateTime.Now,
@@ -265,8 +315,10 @@ namespace Customer.Service
                     throw new Exception(CommonMessage.ParameterInvalid);
                 }
 
+                Guid id = new Guid(model.Id);
+
                 var checkExistsAccount = await _context.CustomerRepository
-                                                            .AnyAsync(m => m.Id == model.Id)
+                                                            .AnyAsync(m => m.Id == id)
                                                             .ConfigureAwait(true);
 
                 if (!checkExistsAccount)
@@ -277,7 +329,7 @@ namespace Customer.Service
                 }
                 else
                 {
-                    await _context.CustomerRepository.Query().Where(m => m.Id == model.Id)
+                    await _context.CustomerRepository.Query().Where(m => m.Id == id)
                                                          .UpdateAsync(m => new Warehouse.DataAccess.Entities.Customer()
                                                          {
                                                              IsActive = model.IsActive,
@@ -312,11 +364,13 @@ namespace Customer.Service
                     throw new Exception(CommonMessage.ParameterInvalid);
                 }
 
-                var checkExistsAccount = await _context.UserRepository
-                                                        .AnyAsync(m => m.Id == model.Id)
+                Guid id = new Guid(model.Id);
+
+                var checkExists = await _context.CustomerRepository
+                                                        .AnyAsync(m => m.Id == id)
                                                         .ConfigureAwait(true);
 
-                if (!checkExistsAccount)
+                if (!checkExists)
                 {
                     response.Errors.Add(CommonMessage.IdNotFound);
                     response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
@@ -325,7 +379,7 @@ namespace Customer.Service
                 else
                 {
                     await _context.CustomerRepository.Query()
-                                                        .Where(m => m.Id == model.Id)
+                                                        .Where(m => m.Id == id)
                                                         .UpdateAsync(m => new Warehouse.DataAccess.Entities.Customer()
                                                         {
                                                             Deleted = true,

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Customer.Service.Models
 {
@@ -7,20 +8,27 @@ namespace Customer.Service.Models
     /// </summary>
     public class CustomerModel
     {
-        public Guid Id { get; set; }
+        public string Id { get; set; }
 
+        [Required]
+        [MaxLength(300)]
         public string Name { get; set; }
 
-        public Guid? LogoFileId { get; set; }
+        public string LogoFileId { get; set; }
 
+        [MaxLength(20)]
         public string PrimaryPhone { get; set; }
 
+        [MaxLength(20)]
         public string SecondaryPhone { get; set; }
 
+        [MaxLength(20)]
         public string Fax { get; set; }
 
+        [MaxLength(50)]
         public string Website { get; set; }
 
+        [MaxLength(50)]
         public string TaxCode { get; set; }
 
         public bool IsCompany { get; set; }
@@ -29,15 +37,32 @@ namespace Customer.Service.Models
 
         public string Description { get; set; }
 
+        [MaxLength(300)]
         public string Address { get; set; }
 
-        public Guid? CitiId { get; set; }
+        public string CityId { get; set; }
 
-        public Guid? CountryId { get; set; }
+        public string CityName { get; set; }
+
+        public string CountryId { get; set; }
+
+        public string CountryName { get; set; }
 
         public decimal Longtitue { get; set; }
 
         public decimal Latitude { get; set; }
+
+        [MaxLength(50)]
+        public string Email { get; set; }
+
+        [MaxLength(50)]
+        public string ContactName { get; set; }
+
+        [MaxLength(50)]
+        public string ContactPhone { get; set; }
+
+        [MaxLength(50)]
+        public string ContactEmail { get; set; }
 
         public bool IsActive { get; set; }
 

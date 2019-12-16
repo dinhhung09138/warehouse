@@ -1,0 +1,9 @@
+.contact-info {}
+
+.contact-info .name,
+.contact-info .email,
+.contact-info .phone,
+.contact-info .website {
+    margin: 0px;
+    font-size: 12px;
+}
