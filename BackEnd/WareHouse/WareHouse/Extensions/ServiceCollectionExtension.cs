@@ -173,6 +173,7 @@ namespace WareHouseApplication.Extensions
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<ICountryService, CountryService>();
+            services.AddScoped<ICityService, CityService>();
             return services;
         }
     }
