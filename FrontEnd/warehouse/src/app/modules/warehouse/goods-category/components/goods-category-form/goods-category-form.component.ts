@@ -50,7 +50,6 @@ export class GoodsCategoryFormComponent implements OnInit {
 
     this.categoryService.save(this.categoryForm.value).subscribe((response: ResponseModel) => {
       if (response.responseStatus === ResponseStatus.warning) {
-        console.log(response.errors.join(','));
         this.warningMessage.push({severity: 'warn', summary: 'Warning', detail: response.errors.join(',')});
         this.loading.showLoading(false);
       } else if (response.responseStatus === ResponseStatus.error) {

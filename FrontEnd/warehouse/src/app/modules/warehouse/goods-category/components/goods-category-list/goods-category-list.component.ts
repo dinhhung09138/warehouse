@@ -25,7 +25,6 @@ export class GoodsCategoryListComponent implements OnInit {
   filter: FilterModel;
   list: GoodsCategoryModel[] = [];
   totalRow = 0;
-  tableColumn: TableColumnModel[] = [];
 
   constructor(private categoryService: GoodsCategoryService,
               private loading: LoadingService,
@@ -35,7 +34,6 @@ export class GoodsCategoryListComponent implements OnInit {
 
   ngOnInit() {
     this.filter = new FilterModel();
-    this.initTableheader();
     this.getlist();
     this.reloadDataListener();
   }
@@ -46,13 +44,6 @@ export class GoodsCategoryListComponent implements OnInit {
         this.getlist();
       }
     });
-  }
-
-  private initTableheader() {
-    this.tableColumn.push(new TableColumnModel('name', this.formMessage.table.name));
-    this.tableColumn.push(new TableColumnModel('description', this.formMessage.table.description));
-    this.tableColumn.push(new TableColumnModel('active', this.formMessage.table.active));
-    this.tableColumn.push(new TableColumnModel('action', ''));
   }
 
   onFilter(text: string) {
@@ -106,7 +97,6 @@ export class GoodsCategoryListComponent implements OnInit {
       if (response) {
         this.categoryService.delete(item).subscribe((response: ResponseModel) => {
           if (response.responseStatus === ResponseStatus.warning) {
-            console.log(response.errors.join(','));
             this.messageService.showWarning(response.errors.join(','));
           } else if (response.responseStatus === ResponseStatus.error) {
             this.messageService.showError(response.errors.join(','));
@@ -121,7 +111,6 @@ export class GoodsCategoryListComponent implements OnInit {
 
   private getlist() {
     this.loading.showLoading(true);
-    console.log(this.filter);
     this.categoryService.list(this.filter).subscribe((response: ResponseModel) => {
       if (response.responseStatus === ResponseStatus.warning) {
         this.messageService.showWarning(response.errors.join(','));
