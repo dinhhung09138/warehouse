@@ -2,7 +2,7 @@ import { SharedResource } from 'src/app/shared/shared.message';
 
 export class UnitResource {
   static readonly list = {
-    title: 'Units',
+    title: 'Unit',
     table: {
       code: 'Code',
       name: 'Name',
@@ -18,7 +18,8 @@ export class UnitResource {
   };
 
   static readonly form = {
-    title: 'Unit',
+    titleCreate: 'Create Unit',
+    titleEdit: 'Edit Unit',
     form: {
       code: 'Code',
       name: 'Name',

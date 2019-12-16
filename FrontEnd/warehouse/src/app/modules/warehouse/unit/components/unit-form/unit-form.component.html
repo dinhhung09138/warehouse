@@ -1,6 +1,8 @@
 <form class="form" [formGroup]="unitForm" (submit)="!isLoading ? onSubmitForm() : false" autocomplete="off">
     <div class="modal-header">
-        <h5 class="modal-title"> {{ formMessage.title }} </h5>
+        <h5 class="modal-title">
+            {{ isEdit ? formMessage.titleEdit : formMessage.titleCreate }}
+        </h5>
     </div>
     <div class="modal-body fs-20">
         <div class="row">
