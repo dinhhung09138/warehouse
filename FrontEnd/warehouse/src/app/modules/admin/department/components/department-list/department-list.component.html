@@ -1,0 +1,57 @@
+<div class="card-header">
+    <h1 class="card-title">{{ formMessage.title }}</h1>
+    <div class="card-tools">
+        <button type="button" class="btn btn-tool add-button" (click)="onAddNewClick()"></button>
+        <button type="button" class="btn btn-tool print-button"></button>
+        <button type="button" class="btn btn-tool excel-button"></button>
+    </div>
+</div>
+<div class="card-body p-2">
+    <p-table [value]="list" [customSort]="true" (sortFunction)="onSort($event)" emptymessage="No data">
+        <ng-template pTemplate="caption">
+            <p-toolbar>
+                <div class="ui-toolbar-group-right">
+                    <i class="fa fa-search"></i>
+                    <input type="text" size="50" (keydown.enter)="onFilter($event.target.value)" (change)="onFilter($event.target.value)" class="form-control text-search">
+                </div>
+            </p-toolbar>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th [pSortableColumn]="'name'">
+                    {{ formMessage.table.name }}
+                    <p-sortIcon [field]="'name'"></p-sortIcon>
+                </th>
+                <th class="wh-80">
+                    {{ formMessage.table.active }}
+                </th>
+                <th class="wh-100"></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+            <tr>
+                <td>{{ item.name }}</td>
+                <td class="text-center">
+                    <i *ngIf="item.isActive" class="fas fa-check"></i>
+                    <i *ngIf="!item.isActive" class="fas fa-minus-circle"></i>
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-tool edit-button" (click)="onUpdateClick(item)">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                    <button type="button" class="btn btn-tool delete-button" (click)="onDeleteClick(item)">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td [attr.colspan]="3" class="text-center">{{ formMessage.message.nodata }}</td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+            <p-paginator [rows]="30" [totalRecords]="totalRow" [pageLinkSize]="5" [rowsPerPageOptions]="[30, 50, 100]" (onPageChange)="onPageChange($event)"></p-paginator>
+        </ng-template>
+    </p-table>
+</div>
