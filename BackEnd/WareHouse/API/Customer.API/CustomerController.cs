@@ -87,6 +87,42 @@ namespace Customer.API
         }
 
         /// <summary>
+        /// Create customer account login.
+        /// </summary>
+        /// <param name="model">Customer model.</param>
+        /// <returns>IActionResult.</returns>
+        [HttpPost]
+        [Route("create-account")]
+        public async Task<IActionResult> CreateUserAccount(CustomerModel model)
+        {
+            if (model != null)
+            {
+                model.CurrentUserId = CurrentUserId();
+            }
+
+            var response = await _customerService.CreateUserAccount(model).ConfigureAwait(false);
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Update password.
+        /// </summary>
+        /// <param name="model">Customer model.</param>
+        /// <returns>IActionResult.</returns>
+        [HttpPost]
+        [Route("update-password")]
+        public async Task<IActionResult> UpdatePassword(CustomerModel model)
+        {
+            if (model != null)
+            {
+                model.CurrentUserId = CurrentUserId();
+            }
+
+            var response = await _customerService.UpdatePassword(model).ConfigureAwait(false);
+            return Ok(response);
+        }
+
+        /// <summary>
         /// Update active status customer.
         /// </summary>
         /// <param name="model">Customer model.</param>

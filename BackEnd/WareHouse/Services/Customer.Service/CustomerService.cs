@@ -11,6 +11,8 @@ using Core.Common.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Warehouse.DataAccess;
 using Z.EntityFramework.Plus;
+using Core.Common.Helpers;
+using Customer.Service.Constants;
 
 namespace Customer.Service
 {
@@ -174,6 +176,7 @@ namespace Customer.Service
                 md.CountryId = !item.CountryId.HasValue ? string.Empty : item.CountryId.ToString();
                 md.Longtitue = item.Longtitue;
                 md.Latitude = item.Latitude;
+                md.UserName = item.UserName;
                 md.IsActive = item.IsActive;
                 md.RowVersion = item.RowVersion;
 
@@ -260,6 +263,13 @@ namespace Customer.Service
                 }
                 else
                 {
+                    string password = string.Empty;
+
+                    if (!string.IsNullOrEmpty(model.UserName))
+                    {
+                        password = PasswordSecurityHelper.GetHashedPassword(model.Password);
+                    }
+
                     await _context.CustomerRepository.AddAsync(new Warehouse.DataAccess.Entities.Customer()
                     {
                         Id = Guid.NewGuid(),
@@ -282,12 +292,126 @@ namespace Customer.Service
                         ContactEmail = model.ContactEmail,
                         CityId = (model.CityId.Length > 0 ? new Guid(model.CityId) : default(Guid)),
                         CountryId = (model.CountryId.Length > 0 ? new Guid(model.CountryId) : default(Guid)),
+                        UserName = model.UserName,
+                        Password = password,
                         IsActive = model.IsActive,
                         CreateBy = model.CurrentUserId,
                         CreateDate = DateTime.Now,
                         Deleted = false,
                     }).ConfigureAwait(true);
                 }
+
+                await _context.SaveChangesAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.AddErrorLog(this.GetType().Name, MethodBase.GetCurrentMethod().Name, model, ex);
+                response.ResponseStatus = Core.Common.Enums.ResponseStatus.Error;
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Create User name for customer.
+        /// </summary>
+        /// <param name="model">Customer employee model.</param>
+        /// <returns>ResponseModel object.</returns>
+        public async Task<ResponseModel> CreateUserAccount(CustomerModel model)
+        {
+            var response = new ResponseModel();
+            try
+            {
+                if (model == null)
+                {
+                    throw new Exception(CommonMessage.ParameterInvalid);
+                }
+
+                Guid id = new Guid(model.Id);
+                string password = PasswordSecurityHelper.GetHashedPassword(model.Password);
+
+                var checkExists = await _context.CustomerEmployeeRepository
+                                                            .AnyAsync(m => m.Id == id
+                                                                           && m.CreateBy == model.CurrentUserId)
+                                                            .ConfigureAwait(true);
+
+                if (!checkExists)
+                {
+                    response.Errors.Add(CommonMessage.IdNotFound);
+                    response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
+                    return response;
+                }
+
+                checkExists = await _context.CustomerEmployeeRepository
+                                                            .AnyAsync(m => m.UserName == model.UserName
+                                                                           && m.CreateBy == model.CurrentUserId
+                                                                           && m.Deleted == false)
+                                                            .ConfigureAwait(true);
+
+                if (!checkExists)
+                {
+                    response.Errors.Add(Message.UserNameIsExists);
+                    response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
+                    return response;
+                }
+
+                await _context.CustomerRepository.Query().Where(m => m.Id == id)
+                                                        .UpdateAsync(m => new Warehouse.DataAccess.Entities.Customer()
+                                                        {
+                                                            UserName = model.UserName,
+                                                            Password = password,
+                                                            UpdateBy = model.CurrentUserId,
+                                                            UpdateDate = DateTime.Now,
+                                                        }).ConfigureAwait(false);
+
+                await _context.SaveChangesAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.AddErrorLog(this.GetType().Name, MethodBase.GetCurrentMethod().Name, model, ex);
+                response.ResponseStatus = Core.Common.Enums.ResponseStatus.Error;
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Update passowrd for customer.
+        /// </summary>
+        /// <param name="model">Customer model.</param>
+        /// <returns>ResponseModel object.</returns>
+        public async Task<ResponseModel> UpdatePassword(CustomerModel model)
+        {
+            var response = new ResponseModel();
+            try
+            {
+                if (model == null)
+                {
+                    throw new Exception(CommonMessage.ParameterInvalid);
+                }
+
+                Guid id = new Guid(model.Id);
+                string password = PasswordSecurityHelper.GetHashedPassword(model.Password);
+
+                var checkExists = await _context.CustomerEmployeeRepository
+                                                            .AnyAsync(m => m.Id == id
+                                                                           && m.CreateBy == model.CurrentUserId)
+                                                            .ConfigureAwait(true);
+
+                if (!checkExists)
+                {
+                    response.Errors.Add(CommonMessage.IdNotFound);
+                    response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
+                    return response;
+                }
+
+                await _context.CustomerRepository.Query().Where(m => m.Id == id)
+                                                        .UpdateAsync(m => new Warehouse.DataAccess.Entities.Customer()
+                                                        {
+                                                            Password = password,
+                                                            UpdateBy = model.CurrentUserId,
+                                                            UpdateDate = DateTime.Now,
+                                                        }).ConfigureAwait(false);
 
                 await _context.SaveChangesAsync().ConfigureAwait(false);
             }
@@ -317,28 +441,27 @@ namespace Customer.Service
 
                 Guid id = new Guid(model.Id);
 
-                var checkExistsAccount = await _context.CustomerRepository
+                var checkExists = await _context.CustomerRepository
                                                             .AnyAsync(m => m.Id == id)
                                                             .ConfigureAwait(true);
 
-                if (!checkExistsAccount)
+                if (!checkExists)
                 {
                     response.Errors.Add(CommonMessage.IdNotFound);
                     response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
                     return response;
                 }
-                else
-                {
-                    await _context.CustomerRepository.Query().Where(m => m.Id == id)
-                                                         .UpdateAsync(m => new Warehouse.DataAccess.Entities.Customer()
-                                                         {
-                                                             IsActive = model.IsActive,
-                                                             UpdateBy = model.CurrentUserId,
-                                                             UpdateDate = DateTime.Now,
-                                                         }).ConfigureAwait(false);
 
-                    await _context.SaveChangesAsync().ConfigureAwait(false);
-                }
+                await _context.CustomerRepository.Query()
+                                                    .Where(m => m.Id == id)
+                                                    .UpdateAsync(m => new Warehouse.DataAccess.Entities.Customer()
+                                                    {
+                                                        IsActive = model.IsActive,
+                                                        UpdateBy = model.CurrentUserId,
+                                                        UpdateDate = DateTime.Now,
+                                                    }).ConfigureAwait(false);
+
+                await _context.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -376,21 +499,19 @@ namespace Customer.Service
                     response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
                     return response;
                 }
-                else
-                {
-                    await _context.CustomerRepository.Query()
-                                                        .Where(m => m.Id == id)
-                                                        .UpdateAsync(m => new Warehouse.DataAccess.Entities.Customer()
-                                                        {
-                                                            Deleted = true,
-                                                            UpdateBy = model.CurrentUserId,
-                                                            UpdateDate = DateTime.Now,
-                                                            DeleteBy = model.CurrentUserId,
-                                                            DeleteDate = DateTime.Now,
-                                                        }).ConfigureAwait(false);
 
-                    await _context.SaveChangesAsync().ConfigureAwait(false);
-                }
+                await _context.CustomerRepository.Query()
+                                                .Where(m => m.Id == id)
+                                                .UpdateAsync(m => new Warehouse.DataAccess.Entities.Customer()
+                                                {
+                                                    Deleted = true,
+                                                    UpdateBy = model.CurrentUserId,
+                                                    UpdateDate = DateTime.Now,
+                                                    DeleteBy = model.CurrentUserId,
+                                                    DeleteDate = DateTime.Now,
+                                                }).ConfigureAwait(false);
+
+                await _context.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {

@@ -64,6 +64,12 @@ namespace Customer.Service.Models
         [MaxLength(50)]
         public string ContactEmail { get; set; }
 
+        [MaxLength(50)]
+        public string UserName { get; set; }
+
+        [MaxLength(250)]
+        public string Password { get; set; }
+
         public bool IsActive { get; set; }
 
         public byte[] RowVersion { get; set; }
