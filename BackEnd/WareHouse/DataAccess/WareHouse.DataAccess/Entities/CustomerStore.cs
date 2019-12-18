@@ -10,15 +10,17 @@ namespace Warehouse.DataAccess.Entities
     public class CustomerStore
     {
         public Guid Id { get; set; }
+        public Guid ClientId { get; set; }
         public string Name { get; set; }
         public string PrimaryPhone { get; set; }
         public string SecondaryPhone { get; set; }
         public string Fax { get; set; }
+        public string Email { get; set; }
         public Guid? StoreManagerId { get; set; }
         public DateTime? StartOn { get; set; }
         public string Description { get; set; }
         public string Address { get; set; }
-        public Guid? CitiId { get; set; }
+        public Guid? CityId { get; set; }
         public Guid? CountryId { get; set; }
         public decimal Longtitue { get; set; }
         public decimal Latitude { get; set; }

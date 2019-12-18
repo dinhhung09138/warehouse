@@ -10,6 +10,7 @@ namespace Warehouse.DataAccess.Entities
     public class Customer
     {
         public Guid Id { get; set; }
+        public Guid ClientId { get; set; }
         public string Name { get; set; }
         public Guid? LogoFileId { get; set; }
         public string PrimaryPhone { get; set; }
@@ -29,6 +30,8 @@ namespace Warehouse.DataAccess.Entities
         public string ContactName { get; set; }
         public string ContactPhone { get; set; }
         public string ContactEmail { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
         public bool IsActive { get; set; }
         public string CreateBy { get; set; }
         public DateTime CreateDate { get; set; }

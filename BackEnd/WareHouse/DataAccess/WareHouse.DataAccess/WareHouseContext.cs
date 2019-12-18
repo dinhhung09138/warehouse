@@ -361,6 +361,11 @@ namespace Warehouse.DataAccess
                             .HasColumnType("uniqueidentifier")
                             .IsRequired(true);
 
+                entity.Property(e => e.ClientId)
+                            .HasColumnName("ClientId")
+                            .HasColumnType("uniqueidentifier")
+                            .IsRequired(true);
+
                 entity.Property(e => e.Name)
                             .HasColumnName("Name")
                             .HasMaxLength(300)
@@ -453,6 +458,17 @@ namespace Warehouse.DataAccess
                             .HasMaxLength(50)
                             .IsUnicode(false);
 
+                entity.Property(e => e.UserName)
+                            .HasColumnName("UserName")
+                            .HasMaxLength(50)
+                            .IsRequired(true)
+                            .IsUnicode(false);
+
+                entity.Property(e => e.Password)
+                            .HasColumnName("Password")
+                            .HasMaxLength(250)
+                            .IsUnicode(false);
+
                 entity.Property(e => e.IsActive)
                             .HasColumnName("IsActive")
                             .IsRequired(true)
@@ -508,8 +524,17 @@ namespace Warehouse.DataAccess
             {
                 entity.HasKey(e => e.Id).ForSqlServerIsClustered(true);
 
+                entity.HasIndex(e => e.Code)
+                            .IsUnique()
+                            .HasName("CustomerEmployee_IDX_Code");
+
                 entity.Property(e => e.Id)
                             .HasColumnName("Id")
+                            .HasColumnType("uniqueidentifier")
+                            .IsRequired(true);
+
+                entity.Property(e => e.ClientId)
+                            .HasColumnName("ClientId")
                             .HasColumnType("uniqueidentifier")
                             .IsRequired(true);
 
@@ -523,7 +548,7 @@ namespace Warehouse.DataAccess
                             .HasColumnName("Name")
                             .HasMaxLength(300)
                             .IsRequired(true)
-                            .IsUnicode(false);
+                            .IsUnicode(true);
 
                 entity.Property(e => e.AvatarFileId)
                             .HasColumnName("AvatarFileId")
@@ -620,6 +645,11 @@ namespace Warehouse.DataAccess
                             .HasColumnType("uniqueidentifier")
                             .IsRequired(true);
 
+                entity.Property(e => e.ClientId)
+                            .HasColumnName("ClientId")
+                            .HasColumnType("uniqueidentifier")
+                            .IsRequired(true);
+
                 entity.Property(e => e.Name)
                             .HasColumnName("Name")
                             .HasMaxLength(300)
@@ -641,6 +671,11 @@ namespace Warehouse.DataAccess
                             .HasMaxLength(20)
                             .IsUnicode(false);
 
+                entity.Property(e => e.Email)
+                            .HasColumnName("Email")
+                            .HasMaxLength(50)
+                            .IsUnicode(false);
+
                 entity.Property(e => e.StoreManagerId)
                             .HasColumnName("StoreManagerId")
                             .HasColumnType("uniqueidentifier")
@@ -660,8 +695,8 @@ namespace Warehouse.DataAccess
                             .HasMaxLength(300)
                             .IsUnicode(true);
 
-                entity.Property(e => e.CitiId)
-                            .HasColumnName("CitiId")
+                entity.Property(e => e.CityId)
+                            .HasColumnName("CityId")
                             .HasColumnType("uniqueidentifier")
                             .IsRequired(false);
 
@@ -921,7 +956,7 @@ namespace Warehouse.DataAccess
                             .HasColumnName("Name")
                             .HasMaxLength(200)
                             .IsRequired(true)
-                            .IsUnicode(false);
+                            .IsUnicode(true);
 
                 entity.Property(e => e.Value)
                             .HasColumnName("Fee")

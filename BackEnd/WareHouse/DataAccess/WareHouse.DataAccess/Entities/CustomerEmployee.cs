@@ -10,6 +10,7 @@ namespace Warehouse.DataAccess.Entities
     public class CustomerEmployee
     {
         public Guid Id { get; set; }
+        public Guid ClientId { get; set; }
         public string Code { get; set; }
         public string Name { get; set; }
         public Guid? AvatarFileId { get; set; }
