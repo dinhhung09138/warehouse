@@ -166,14 +166,20 @@ namespace WareHouseApplication.Extensions
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<ISessionLogService, SessionLogService>();
             services.AddScoped<IUserService, UserService>();
+            //
+            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<ICustomerEmployeeService, CustomerEmployeeService>();
+            services.AddScoped<ICustomerStoreService, CustomerStoreService>();
+            //
             services.AddScoped<IGoodsUnitService, GoodsUnitService>();
             services.AddScoped<IGoodsCategoryService, GoodsCategoryService>();
-            services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IGoodsService, GoodsService>();
+            //
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<ICountryService, CountryService>();
             services.AddScoped<ICityService, CityService>();
+            services.AddScoped<IFeeService, FeeService>();
             return services;
         }
     }
