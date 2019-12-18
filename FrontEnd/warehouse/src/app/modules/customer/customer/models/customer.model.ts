@@ -22,6 +22,10 @@ export class CustomerModel {
   contactName: string;
   contactPhone: string;
   contactEmail: string;
+  createUser: boolean;
+  userName: string;
+  password: string;
+  confirmPassword: string;
   isEdit: boolean;
   isActive: boolean;
   rowVersion: any;
@@ -49,6 +53,10 @@ export class CustomerModel {
     this.contactName = '';
     this.contactPhone = '';
     this.contactEmail = '';
+    this.createUser = false;
+    this.userName = '';
+    this.password = '';
+    this.confirmPassword = '';
     this.isEdit = isEdit;
     this.isActive = true;
   }

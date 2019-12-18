@@ -111,6 +111,7 @@ export class CustomerFormComponent implements OnInit {
       contactName: [this.customer.contactName, [Validators.maxLength(50)]],
       contactPhone: [this.customer.contactPhone, [Validators.maxLength(50)]],
       contactEmail: [this.customer.contactEmail, [Validators.maxLength(50)]],
+      userName: [this.customer.userName, [Validators.required, Validators.maxLength(50)]],
       isEdit: [this.isEdit],
       isActive: [this.customer.isActive],
       rowVersion: [this.customer.rowVersion],
@@ -132,7 +133,6 @@ export class CustomerFormComponent implements OnInit {
         this.loading.showLoading(false);
       } else {
         this.customer = response.result;
-        console.log(response.result);
         this.customerForm.patchValue({
           id: response.result.id,
           name: response.result.name,
@@ -155,6 +155,7 @@ export class CustomerFormComponent implements OnInit {
           contactName: response.result.contactName,
           contactPhone: response.result.contactPhone,
           contactEmail: response.result.contactEmail,
+          userName: response.result.userName,
           isEdit: this.isEdit,
           isActive: response.result.isActive,
           rowVersion: response.result.rowVersion,

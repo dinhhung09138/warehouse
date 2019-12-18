@@ -26,7 +26,7 @@
                     {{ formMessage.table.address }}
                     <p-sortIcon [field]="'address'"></p-sortIcon>
                 </th>
-                <th [pSortableColumn]="'fax'" class="wh-200">
+                <th>
                     {{ formMessage.table.companyContact }}
                 </th>
                 <th [pSortableColumn]="'startOn'" class="wh-120">
@@ -87,7 +87,7 @@
         </ng-template>
         <ng-template pTemplate="emptymessage">
             <tr>
-                <td [attr.colspan]="7" class="text-center">{{ formMessage.message.nodata }}</td>
+                <td [attr.colspan]="8" class="text-center">{{ formMessage.message.nodata }}</td>
             </tr>
         </ng-template>
         <ng-template pTemplate="summary">

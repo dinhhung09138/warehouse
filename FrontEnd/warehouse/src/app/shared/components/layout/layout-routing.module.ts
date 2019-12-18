@@ -35,6 +35,11 @@ const routes: Routes = [
     loadChildren: () => import('../../../modules/warehouse/goods/goods.module').then(m => m.GoodsModule),
   },
   {
+    path: 'warehouse/fee',
+    component: LayoutComponent,
+    loadChildren: () => import('../../../modules/warehouse/fee/fee.module').then(m => m.FeeModule),
+  },
+  {
     path: 'admin/country',
     component: LayoutComponent,
     loadChildren: () => import('../../../modules/admin/country/country.module').then(m => m.CountryModule),

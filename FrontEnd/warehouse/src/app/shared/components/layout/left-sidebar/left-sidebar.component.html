@@ -47,6 +47,12 @@
                                 <p>Goods</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a [routerLink]="['/warehouse/fee']" [routerLinkActive]="['active']" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Fee</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 <li class="nav-item has-treeview">
@@ -105,6 +111,18 @@
                             <i class="nav-icon far fa-calendar-alt"></i>
                             <p>
                                 Customer
+                            </p>
+                        </a>
+                        <a [routerLink]="['/customer/store']" [routerLinkActive]="['active']" class="nav-link">
+                            <i class="nav-icon far fa-calendar-alt"></i>
+                            <p>
+                                Customer's Store
+                            </p>
+                        </a>
+                        <a [routerLink]="['/customer/employee']" [routerLinkActive]="['active']" class="nav-link">
+                            <i class="nav-icon far fa-calendar-alt"></i>
+                            <p>
+                                Customer's Employee
                             </p>
                         </a>
                     </ul>

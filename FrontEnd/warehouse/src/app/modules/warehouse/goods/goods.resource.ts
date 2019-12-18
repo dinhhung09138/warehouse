@@ -18,7 +18,8 @@ export class GoodsResource {
   };
 
   static readonly form = {
-    title: 'Goods',
+    titleCreate: 'Create Goods',
+    titleEdit: 'Edit Goods',
     form: {
       code: 'Code',
       name: 'Name',
