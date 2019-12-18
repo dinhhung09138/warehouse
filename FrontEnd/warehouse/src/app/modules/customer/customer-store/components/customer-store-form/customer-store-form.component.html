@@ -1,0 +1,173 @@
+<form class="form" [formGroup]="customerStoreForm" (submit)="!isLoading ? onSubmitForm() : false" autocomplete="off">
+    <div class="modal-header">
+        <h5 class="modal-title">
+            {{ isEdit ? formMessage.titleEdit : formMessage.titleCreate }}
+        </h5>
+    </div>
+    <div class="modal-body fs-20">
+        <div class="row">
+            <div class="col-12">
+                <p-messages [(value)]="warningMessage"></p-messages>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {{ formMessage.form.name }}
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-12">
+                <input type="text" formControlName="name" required class="form-control" maxlength="300" tabindex="1" [ngClass]="{'is-invalid': submitted && customerStoreForm.controls['name'].errors}" />
+                <div *ngIf="submitted && customerStoreForm.controls['name'].errors" class="invalid-feedback">
+                    <div *ngIf="customerStoreForm.controls['name'].errors.required">
+                        {{ formMessage.message.name }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                {{ formMessage.form.primaryPhone }}
+            </div>
+            <div class="col-4">
+                {{ formMessage.form.contactName }}
+            </div>
+            <div class="col-4">
+                {{ formMessage.form.fax }}
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-4">
+                <input type="text" formControlName="primaryPhone" class="form-control" maxlength="20" tabindex="2" />
+            </div>
+            <div class="col-4">
+                <input type="text" formControlName="secondaryPhone" class="form-control" maxlength="20" tabindex="3" />
+            </div>
+            <div class="col-4">
+                <input type="text" formControlName="fax" class="form-control" maxlength="20" tabindex="4" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                {{ formMessage.form.email }}
+            </div>
+            <div class="col-4">
+                {{ formMessage.form.storeManagerId }}
+            </div>
+            <div class="col-4">
+                {{ formMessage.form.email }}
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-4">
+                <input type="text" formControlName="website" class="form-control" maxlength="50" tabindex="5" />
+            </div>
+            <div class="col-4">
+                <ng-select [items]="employeeList" bindLabel="title" bindValue="value" [selectOnTab]="true" tabindex="6" formControlName="storeManagerId" [clearable]="false" class="form-control" [loading]="employeeLoading">
+
+                </ng-select>
+            </div>
+            <div class="col-4">
+                <input type="text" formControlName="email" class="form-control" maxlength="50" tabindex="7" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                {{ formMessage.form.startOn }}
+            </div>
+            <div class="col-4">
+            </div>
+            <div class="col-4">
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-4">
+                <p-calendar formControlName="startOn" showButtonBar="true" [locale]="vnDate" showIcon="true" tabindex="8"></p-calendar>
+            </div>
+            <div class="col-4">
+                <input type="checkbox" formControlName="isCompany" tabindex="9" /> {{ formMessage.form.isCompany }}
+            </div>
+            <div class="col-4">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                {{ formMessage.form.contactName }}
+            </div>
+            <div class="col-4">
+                {{ formMessage.form.contactPhone }}
+            </div>
+            <div class="col-4">
+                {{ formMessage.form.contactEmail }}
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-4">
+                <input type="text" formControlName="contactName" class="form-control" maxlength="50" tabindex="9" />
+            </div>
+            <div class="col-4">
+                <input type="text" formControlName="contactPhone" class="form-control" maxlength="50" tabindex="10" />
+            </div>
+            <div class="col-4">
+                <input type="text" formControlName="contactEmail" class="form-control" maxlength="50" tabindex="11" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                {{ formMessage.form.address }}
+            </div>
+            <div class="col-4">
+                {{ formMessage.form.countryId }}
+            </div>
+            <div class="col-4">
+                {{ formMessage.form.cityId }}
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-4">
+                <input type="text" formControlName="address" class="form-control" maxlength="300" tabindex="12" />
+            </div>
+            <div class="col-4">
+                <ng-select [items]="countryList" bindLabel="title" bindValue="value" [selectOnTab]="true" (change)="countryChange()" tabindex="13" formControlName="countryId" [clearable]="false" class="form-control" [loading]="countryLoading">
+
+                </ng-select>
+            </div>
+            <div class="col-4">
+                <ng-select [items]="cityList" bindLabel="title" bindValue="value" [selectOnTab]="true" tabindex="14" formControlName="cityId" (open)="getCityList()" [clearable]="false" class="form-control" [loading]="cityLoading">
+
+                </ng-select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {{ formMessage.form.description }}
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-12">
+                <input type="text" formControlName="description" class="form-control" tabindex="15" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {{ formMessage.form.isActive }}
+                <input type="checkbox" formControlName="isActive" tabindex="16" />
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div class="row">
+            <div class="col-12 text-center">
+                <button type="button" class="btn btn-tool refresh-button" (click)="onRefreshClick()" tabindex="17">
+                <i class="fas fa-refresh"></i> Refresh
+              </button>
+                <button type="submit" class="btn btn-tool save-button" tabindex="18">
+                <i class="fas fa-save"></i> Save
+              </button>
+                <button type="button" class="btn btn-tool cancel-button" (click)="onFormCloseClick()" tabindex="19">
+                <i class="fas fa-power-off"></i> Close
+              </button>
+            </div>
+        </div>
+    </div>
+</form>
