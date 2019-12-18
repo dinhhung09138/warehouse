@@ -63,6 +63,18 @@ export class AppLicationSetting {
     fullTime: 'fullTime',
   };
 
+  /** Number format */
+  static readonly numberFormat = {
+    decimal: '.2-2',
+    money: '.0',
+  };
+
+  /* Number Type */
+  static readonly numberType = {
+    decimal: 'decimal',
+    money: 'money',
+  };
+
   /** Calendar datetime config */
   static readonly timeZoneSetting = {
     firstDayOfWeek: 0,

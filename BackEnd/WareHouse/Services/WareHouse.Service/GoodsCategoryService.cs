@@ -102,7 +102,7 @@ namespace WareHouse.Service
                                                        Value = m.Id.ToString(),
                                                        Title = m.Name,
                                                    });
-                
+
                 response.Result = await query.ToListAsync();
             }
             catch (Exception ex)
@@ -256,18 +256,16 @@ namespace WareHouse.Service
                     response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
                     return response;
                 }
-                else
-                {
-                    await _context.GoodsCategoryRepository.Query().Where(m => m.Id == id)
-                                                         .UpdateAsync(m => new GoodsCategory()
-                                                         {
-                                                             IsActive = model.IsActive,
-                                                             UpdateBy = model.CurrentUserId,
-                                                             UpdateDate = DateTime.Now,
-                                                         }).ConfigureAwait(false);
 
-                    await _context.SaveChangesAsync().ConfigureAwait(false);
-                }
+                await _context.GoodsCategoryRepository.Query().Where(m => m.Id == id)
+                                                     .UpdateAsync(m => new GoodsCategory()
+                                                     {
+                                                         IsActive = model.IsActive,
+                                                         UpdateBy = model.CurrentUserId,
+                                                         UpdateDate = DateTime.Now,
+                                                     }).ConfigureAwait(false);
+
+                await _context.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -305,21 +303,19 @@ namespace WareHouse.Service
                     response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
                     return response;
                 }
-                else
-                {
-                    await _context.GoodsCategoryRepository.Query()
-                                                        .Where(m => m.Id == id)
-                                                        .UpdateAsync(m => new GoodsCategory()
-                                                        {
-                                                            Deleted = true,
-                                                            UpdateBy = model.CurrentUserId,
-                                                            UpdateDate = DateTime.Now,
-                                                            DeleteBy = model.CurrentUserId,
-                                                            DeleteDate = DateTime.Now,
-                                                        }).ConfigureAwait(false);
 
-                    await _context.SaveChangesAsync().ConfigureAwait(false);
-                }
+                await _context.GoodsCategoryRepository.Query()
+                                                    .Where(m => m.Id == id)
+                                                    .UpdateAsync(m => new GoodsCategory()
+                                                    {
+                                                        Deleted = true,
+                                                        UpdateBy = model.CurrentUserId,
+                                                        UpdateDate = DateTime.Now,
+                                                        DeleteBy = model.CurrentUserId,
+                                                        DeleteDate = DateTime.Now,
+                                                    }).ConfigureAwait(false);
+
+                await _context.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {

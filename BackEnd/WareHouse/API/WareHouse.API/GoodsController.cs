@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Core.Common.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -42,6 +40,18 @@ namespace WareHouse.API
         public async Task<IActionResult> List([FromBody] FilterModel filter)
         {
             var response = await _goodsService.List(filter).ConfigureAwait(false);
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Get list of goods to show on combobox.
+        /// </summary>
+        /// <returns>IActionResult.</returns>
+        [HttpGet]
+        [Route("list-combobox")]
+        public async Task<IActionResult> ListCombobox()
+        {
+            var response = await _goodsService.ListCombobox().ConfigureAwait(false);
             return Ok(response);
         }
 

@@ -33,6 +33,20 @@ namespace Customer.Service.Interfaces
         /// <param name="model">Customer model.</param>
         /// <returns>ResponseModel object.</returns>
         Task<ResponseModel> Save(CustomerModel model);
+
+        /// <summary>
+        /// Create User name for customer.
+        /// </summary>
+        /// <param name="model">Customer employee model.</param>
+        /// <returns>ResponseModel object.</returns>
+        Task<ResponseModel> CreateUserAccount(CustomerModel model);
+
+        /// <summary>
+        /// Update passowrd for customer.
+        /// </summary>
+        /// <param name="model">Customer model.</param>
+        /// <returns>ResponseModel object.</returns>
+        Task<ResponseModel> UpdatePassword(CustomerModel model);
         /// <summary>
         /// Update customer status function.
         /// </summary>
