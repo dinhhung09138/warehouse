@@ -157,29 +157,29 @@ namespace Admin.Service
                     throw new Exception(CommonMessage.ParameterInvalid);
                 }
 
-                var checkExistsAccount = await _context.UserRepository.AnyAsync(m => m.Id == model.Id)
-                                                                      .ConfigureAwait(true);
+                var checkExists = await _context.UserRepository
+                                                    .AnyAsync(m => m.Id == model.Id)
+                                                    .ConfigureAwait(true);
 
-                if (!checkExistsAccount)
+                if (!checkExists)
                 {
                     response.Errors.Add(Message.AccountNotfound);
                     response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
                     return response;
                 }
-                else
-                {
-                    string password = PasswordSecurityHelper.GetHashedPassword(model.Password);
 
-                    await _context.UserRepository.Query().Where(m => m.Id == model.Id)
-                                                         .UpdateAsync(m => new Warehouse.DataAccess.Entities.User()
-                                                         {
-                                                             IsActive = model.IsActive,
-                                                             UpdateBy = model.CurrentUserId,
-                                                             UpdateDate = DateTime.Now,
-                                                         }).ConfigureAwait(false);
+                string password = PasswordSecurityHelper.GetHashedPassword(model.Password);
 
-                    await _context.SaveChangesAsync().ConfigureAwait(false);
-                }
+                await _context.UserRepository.Query()
+                                            .Where(m => m.Id == model.Id)
+                                            .UpdateAsync(m => new Warehouse.DataAccess.Entities.User()
+                                            {
+                                                IsActive = model.IsActive,
+                                                UpdateBy = model.CurrentUserId,
+                                                UpdateDate = DateTime.Now,
+                                            }).ConfigureAwait(false);
+
+                await _context.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -205,11 +205,11 @@ namespace Admin.Service
                     throw new Exception(CommonMessage.ParameterInvalid);
                 }
 
-                var checkExistsAccount = await _context.UserRepository
-                                                        .AnyAsync(m => m.Id == model.Id)
-                                                        .ConfigureAwait(true);
+                var checkExists = await _context.UserRepository
+                                                    .AnyAsync(m => m.Id == model.Id)
+                                                    .ConfigureAwait(true);
 
-                if (!checkExistsAccount)
+                if (!checkExists)
                 {
                     response.Errors.Add(Message.AccountNotfound);
                     response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
@@ -217,15 +217,16 @@ namespace Admin.Service
                 }
                 else
                 {
-                    await _context.UserRepository.Query().Where(m => m.Id == model.Id)
-                                                         .UpdateAsync(m => new Warehouse.DataAccess.Entities.User()
-                                                         {
-                                                             Deleted = true,
-                                                             UpdateBy = model.CurrentUserId,
-                                                             UpdateDate = DateTime.Now,
-                                                             DeleteBy = model.CurrentUserId,
-                                                             DeleteDate = DateTime.Now,
-                                                         }).ConfigureAwait(false);
+                    await _context.UserRepository.Query()
+                                                .Where(m => m.Id == model.Id)
+                                                .UpdateAsync(m => new Warehouse.DataAccess.Entities.User()
+                                                {
+                                                    Deleted = true,
+                                                    UpdateBy = model.CurrentUserId,
+                                                    UpdateDate = DateTime.Now,
+                                                    DeleteBy = model.CurrentUserId,
+                                                    DeleteDate = DateTime.Now,
+                                                }).ConfigureAwait(false);
 
                     await _context.SaveChangesAsync().ConfigureAwait(false);
                 }

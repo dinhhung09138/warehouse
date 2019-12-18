@@ -12,6 +12,7 @@ using Warehouse.DataAccess;
 using Warehouse.DataAccess.Entities;
 using Z.EntityFramework.Plus;
 using WareHouse.Service.Constants;
+using Microsoft.EntityFrameworkCore;
 
 namespace WareHouse.Service
 {
@@ -65,7 +66,6 @@ namespace WareHouse.Service
                                                        Name = m.Name,
                                                        Description = m.Description ?? string.Empty,
                                                        IsActive = m.IsActive,
-                                                       RowVersion = m.RowVersion,
                                                    });
 
                 if (filter.Text.Length > 0)
@@ -82,6 +82,34 @@ namespace WareHouse.Service
             catch (Exception ex)
             {
                 _logger.AddErrorLog(this.GetType().Name, MethodBase.GetCurrentMethod().Name, filter, ex);
+                response.ResponseStatus = Core.Common.Enums.ResponseStatus.Error;
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Get list of goods data to show on combobox.
+        /// </summary>
+        /// <returns>ResponseModel object.</returns>
+        public async Task<ResponseModel> ListCombobox()
+        {
+            var response = new ResponseModel();
+            try
+            {
+                var query = _context.GoodsRepository.Query()
+                                                   .Where(m => m.Deleted == false && m.IsActive == true)
+                                                   .Select(m => new SelectedItemModel
+                                                   {
+                                                       Value = m.Id.ToString(),
+                                                       Title = m.Name,
+                                                   });
+
+                response.Result = await query.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.AddErrorLog(this.GetType().Name, MethodBase.GetCurrentMethod().Name, ex);
                 response.ResponseStatus = Core.Common.Enums.ResponseStatus.Error;
             }
 
@@ -259,18 +287,17 @@ namespace WareHouse.Service
                     response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
                     return response;
                 }
-                else
-                {
-                    await _context.GoodsRepository.Query().Where(m => m.Id == id)
-                                                         .UpdateAsync(m => new Goods()
-                                                         {
-                                                             IsActive = model.IsActive,
-                                                             UpdateBy = model.CurrentUserId,
-                                                             UpdateDate = DateTime.Now,
-                                                         }).ConfigureAwait(false);
 
-                    await _context.SaveChangesAsync().ConfigureAwait(false);
-                }
+                await _context.GoodsRepository.Query()
+                                                .Where(m => m.Id == id)
+                                                .UpdateAsync(m => new Goods()
+                                                {
+                                                    IsActive = model.IsActive,
+                                                    UpdateBy = model.CurrentUserId,
+                                                    UpdateDate = DateTime.Now,
+                                                }).ConfigureAwait(false);
+
+                await _context.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -308,21 +335,19 @@ namespace WareHouse.Service
                     response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
                     return response;
                 }
-                else
-                {
-                    await _context.GoodsRepository.Query()
-                                                        .Where(m => m.Id == id)
-                                                        .UpdateAsync(m => new Goods()
-                                                        {
-                                                            Deleted = true,
-                                                            UpdateBy = model.CurrentUserId,
-                                                            UpdateDate = DateTime.Now,
-                                                            DeleteBy = model.CurrentUserId,
-                                                            DeleteDate = DateTime.Now,
-                                                        }).ConfigureAwait(false);
 
-                    await _context.SaveChangesAsync().ConfigureAwait(false);
-                }
+                await _context.GoodsRepository.Query()
+                                            .Where(m => m.Id == id)
+                                            .UpdateAsync(m => new Goods()
+                                            {
+                                                Deleted = true,
+                                                UpdateBy = model.CurrentUserId,
+                                                UpdateDate = DateTime.Now,
+                                                DeleteBy = model.CurrentUserId,
+                                                DeleteDate = DateTime.Now,
+                                            }).ConfigureAwait(false);
+
+                await _context.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {

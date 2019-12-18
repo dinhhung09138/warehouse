@@ -267,19 +267,18 @@ namespace WareHouse.Service
 
                 Guid id = new Guid(model.Id);
 
-                var checkExistsAccount = await _context.GoodsUnitRepository
+                var checkExists = await _context.GoodsUnitRepository
                                                             .AnyAsync(m => m.Id == id)
                                                             .ConfigureAwait(true);
 
-                if (!checkExistsAccount)
+                if (!checkExists)
                 {
                     response.Errors.Add(CommonMessage.IdNotFound);
                     response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
                     return response;
                 }
-                else
-                {
-                    await _context.GoodsUnitRepository.Query().Where(m => m.Id == id)
+
+                await _context.GoodsUnitRepository.Query().Where(m => m.Id == id)
                                                          .UpdateAsync(m => new GoodsUnit()
                                                          {
                                                              IsActive = model.IsActive,
@@ -287,8 +286,7 @@ namespace WareHouse.Service
                                                              UpdateDate = DateTime.Now,
                                                          }).ConfigureAwait(false);
 
-                    await _context.SaveChangesAsync().ConfigureAwait(false);
-                }
+                await _context.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -326,9 +324,8 @@ namespace WareHouse.Service
                     response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
                     return response;
                 }
-                else
-                {
-                    await _context.GoodsUnitRepository.Query()
+
+                await _context.GoodsUnitRepository.Query()
                                                         .Where(m => m.Id == id)
                                                         .UpdateAsync(m => new GoodsUnit()
                                                         {
@@ -339,8 +336,7 @@ namespace WareHouse.Service
                                                             DeleteDate = DateTime.Now,
                                                         }).ConfigureAwait(false);
 
-                    await _context.SaveChangesAsync().ConfigureAwait(false);
-                }
+                await _context.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {

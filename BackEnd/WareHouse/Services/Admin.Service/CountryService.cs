@@ -268,28 +268,27 @@ namespace Admin.Service
 
                 Guid id = new Guid(model.Id);
 
-                var checkExistsAccount = await _context.CountryRepository
+                var checkExists = await _context.CountryRepository
                                                             .AnyAsync(m => m.Id == id)
                                                             .ConfigureAwait(true);
 
-                if (!checkExistsAccount)
+                if (!checkExists)
                 {
                     response.Errors.Add(CommonMessage.IdNotFound);
                     response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
                     return response;
                 }
-                else
-                {
-                    await _context.CountryRepository.Query().Where(m => m.Id == id)
-                                                         .UpdateAsync(m => new Country()
-                                                         {
-                                                             IsActive = model.IsActive,
-                                                             UpdateBy = model.CurrentUserId,
-                                                             UpdateDate = DateTime.Now,
-                                                         }).ConfigureAwait(false);
 
-                    await _context.SaveChangesAsync().ConfigureAwait(false);
-                }
+                await _context.CountryRepository.Query()
+                                                .Where(m => m.Id == id)
+                                                .UpdateAsync(m => new Country()
+                                                {
+                                                    IsActive = model.IsActive,
+                                                    UpdateBy = model.CurrentUserId,
+                                                    UpdateDate = DateTime.Now,
+                                                }).ConfigureAwait(false);
+
+                await _context.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -327,21 +326,19 @@ namespace Admin.Service
                     response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
                     return response;
                 }
-                else
-                {
-                    await _context.CountryRepository.Query()
-                                                        .Where(m => m.Id == id)
-                                                        .UpdateAsync(m => new Country()
-                                                        {
-                                                            Deleted = true,
-                                                            UpdateBy = model.CurrentUserId,
-                                                            UpdateDate = DateTime.Now,
-                                                            DeleteBy = model.CurrentUserId,
-                                                            DeleteDate = DateTime.Now,
-                                                        }).ConfigureAwait(false);
 
-                    await _context.SaveChangesAsync().ConfigureAwait(false);
-                }
+                await _context.CountryRepository.Query()
+                                                .Where(m => m.Id == id)
+                                                .UpdateAsync(m => new Country()
+                                                {
+                                                    Deleted = true,
+                                                    UpdateBy = model.CurrentUserId,
+                                                    UpdateDate = DateTime.Now,
+                                                    DeleteBy = model.CurrentUserId,
+                                                    DeleteDate = DateTime.Now,
+                                                }).ConfigureAwait(false);
+
+                await _context.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
