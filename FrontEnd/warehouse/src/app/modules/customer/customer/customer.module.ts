@@ -15,6 +15,7 @@ import { MessagesModule } from 'primeng/messages';
 import { CalendarModule } from 'primeng/calendar';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { DateTimeFormat } from 'src/app/core/pipes/datetime-format.pipe';
+import { ValidationService } from 'src/app/core/services/validation.service';
 
 
 const routes: Routes = [
@@ -32,6 +33,7 @@ const routes: Routes = [
   ],
   providers: [
     CustomerService,
+    ValidationService,
   ],
   imports: [
     CommonModule,

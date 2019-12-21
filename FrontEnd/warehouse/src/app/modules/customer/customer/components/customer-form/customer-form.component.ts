@@ -12,6 +12,7 @@ import { AppLicationSetting } from 'src/app/core/config/appication-setting.confi
 import { ItemSelectModel } from 'src/app/core/models/item-select.model';
 import { CountryService } from 'src/app/modules/admin/country/services/country.service';
 import { CityService } from 'src/app/modules/admin/city/services/city.service';
+import { ValidationService } from 'src/app/core/services/validation.service';
 
 @Component({
   selector: 'app-customer-form',
@@ -40,7 +41,8 @@ export class CustomerFormComponent implements OnInit {
               private messageService: ShowMessageService,
               private customerService: CustomerService,
               private countryService: CountryService,
-              private cityService: CityService) { }
+              private cityService: CityService,
+              private validation: ValidationService) { }
 
   ngOnInit() {
     this.getCountryList();
@@ -112,13 +114,22 @@ export class CustomerFormComponent implements OnInit {
       contactPhone: [this.customer.contactPhone, [Validators.maxLength(50)]],
       contactEmail: [this.customer.contactEmail, [Validators.maxLength(50)]],
       userName: [this.customer.userName, [Validators.required, Validators.maxLength(50)]],
+      password: [this.customer.password, [Validators.required, Validators.maxLength(50)]],
+      confirmPassword: [this.customer.confirmPassword, [Validators.required, Validators.maxLength(50)]],
       isEdit: [this.isEdit],
       isActive: [this.customer.isActive],
       rowVersion: [this.customer.rowVersion],
+    }, {
+      validators: [
+        this.validation.passwordMatch('password', 'confirmPassword', !this.isEdit),
+      ]
     });
   }
 
   private reloadForm() {
+
+    console.log(this.customerForm);
+
     if (this.isEdit === false) {
       return;
     }

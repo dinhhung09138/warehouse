@@ -48,10 +48,16 @@ export class CustomerResource {
       contactName: 'Contact Name',
       contactPhone: 'Contact Phone',
       contactEmail: 'Contact Email',
+      userName: 'User Name',
+      password: 'Password',
+      confirmPassword: 'Confirm Password',
       isActive: 'Active',
     },
     message: {
       name: 'Name is required',
+      userName: 'User Name is required',
+      password: 'Password is required',
+      confirmPassword: `Password doesn't match`,
       saveSuccess: SharedResource.formMessage.saveSuccess,
     },
   };

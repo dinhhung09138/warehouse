@@ -80,6 +80,7 @@ namespace Customer.API
             if (model != null)
             {
                 model.CurrentUserId = CurrentUserId();
+                model.ClientId = base.CurrentClientId();
             }
 
             var response = await _customerService.Save(model).ConfigureAwait(false);
@@ -98,6 +99,7 @@ namespace Customer.API
             if (model != null)
             {
                 model.CurrentUserId = CurrentUserId();
+                model.ClientId = base.CurrentClientId();
             }
 
             var response = await _customerService.CreateUserAccount(model).ConfigureAwait(false);
@@ -116,6 +118,7 @@ namespace Customer.API
             if (model != null)
             {
                 model.CurrentUserId = CurrentUserId();
+                model.ClientId = base.CurrentClientId();
             }
 
             var response = await _customerService.UpdatePassword(model).ConfigureAwait(false);
@@ -134,6 +137,7 @@ namespace Customer.API
             if (model != null)
             {
                 model.CurrentUserId = CurrentUserId();
+                model.ClientId = base.CurrentClientId();
             }
 
             var response = await _customerService.UpdateActiveStatus(model).ConfigureAwait(false);
@@ -152,6 +156,7 @@ namespace Customer.API
             if (model != null)
             {
                 model.CurrentUserId = CurrentUserId();
+                model.ClientId = base.CurrentClientId();
             }
 
             var response = await _customerService.Delete(model).ConfigureAwait(false);

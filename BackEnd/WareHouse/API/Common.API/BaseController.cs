@@ -64,6 +64,11 @@ namespace Common.API
             return string.Empty;
         }
 
+        protected string CurrentClientId()
+        {
+            return Guid.NewGuid().ToString();
+        }
+
         /// <summary>
         /// Send notify to all user except the current user.
         /// </summary>
