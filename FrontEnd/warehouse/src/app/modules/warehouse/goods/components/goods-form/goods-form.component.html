@@ -110,11 +110,14 @@
                 </div>
             </div>
             <div class="col-6">
-                {{ formMessage.form.name }}
+                {{ formMessage.form.image }}
                 <div class="row">
                     <div class="col-12">
                         <div class="form-group">
-                            <input type="file" name="image" (change)="fileProgress($event)" />
+                            <div class="upload-btn-wrapper">
+                                <button class="btn btn-primary"><i class="fas fa-upload"></i>&nbsp;{{ formMessage.form.image }}</button>
+                                <input type="file" name="myfile" (change)="fileProgress($event)" />
+                            </div>
                         </div>
                         <div *ngIf="fileUploadProgress">
                             Upload progress: {{ fileUploadProgress }}

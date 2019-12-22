@@ -28,6 +28,7 @@ export class GoodsResource {
       size: 'Size',
       unit: 'Unit',
       category: 'Category',
+      image: 'Image',
       active: 'Active',
     },
     message: {

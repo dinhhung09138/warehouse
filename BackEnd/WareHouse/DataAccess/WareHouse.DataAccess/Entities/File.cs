@@ -10,8 +10,10 @@ namespace Warehouse.DataAccess.Entities
     public class File
     {
         public Guid Id { get; set; }
+        public string FileId { get; set; }
         public string FileName { get; set; }
         public string FileSystemName { get; set; }
+        public string FileExt { get; set; }
         public string FilePath { get; set; }
         public decimal Size { get; set; }
         public string CreateBy { get; set; }

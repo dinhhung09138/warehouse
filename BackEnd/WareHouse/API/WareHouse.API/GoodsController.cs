@@ -75,7 +75,7 @@ namespace WareHouse.API
         /// <returns>IActionResult.</returns>
         [HttpPost]
         [Route("save")]
-        public async Task<IActionResult> Save([FromBody] GoodsModel model)
+        public async Task<IActionResult> Save([FromForm] GoodsModel model)
         {
             if (Request.Form.Files != null && Request.Form.Files.Count > 0)
             {

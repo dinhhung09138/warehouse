@@ -32,14 +32,21 @@ namespace WareHouse.Service
         private readonly ILoggerService _logger;
 
         /// <summary>
+        /// File service.
+        /// </summary>
+        private readonly IServerUploadFileService _fileService;
+
+        /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
         /// <param name="context">Data context.</param>
         /// <param name="logger">Log service.</param>
-        public GoodsService(IWareHouseUnitOfWork context, ILoggerService logger)
+        /// <param name="fileService">File service interface.</param>
+        public GoodsService(IWareHouseUnitOfWork context, ILoggerService logger, IServerUploadFileService fileService)
         {
             _context = context;
             _logger = logger;
+            _fileService = fileService;
         }
 
         /// <summary>
@@ -175,6 +182,14 @@ namespace WareHouse.Service
                     throw new Exception(CommonMessage.ParameterInvalid);
                 }
 
+                string fileId = string.Empty;
+
+                if (model.File != null)
+                {
+                    fileId = Guid.NewGuid().ToString();
+                    await _fileService.UploadFile(model.File, fileId, model.CurrentUserId);
+                }
+                
                 if (model.IsEdit)
                 {
                     Guid id = new Guid(model.Id);
@@ -202,23 +217,33 @@ namespace WareHouse.Service
                         return response;
                     }
 
-                    await _context.GoodsRepository.Query()
-                        .Where(m => m.Id == id)
-                        .UpdateAsync(m => new Goods()
-                        {
-                            Code = model.Code,
-                            Name = model.Name,
-                            Brand = model.Brand,
-                            Color = model.Color,
-                            Size = model.Size,
-                            FileId = model.FileId.Length > 0 ? new Guid(model.FileId) : default(Guid),
-                            UnitId = new Guid(model.UnitId),
-                            GoodsCategoryId = new Guid(model.GoodsCategoryId),
-                            Description = model.Description,
-                            IsActive = model.IsActive,
-                            UpdateBy = model.CurrentUserId,
-                            UpdateDate = DateTime.Now,
-                        }).ConfigureAwait(true);
+                    if (!string.IsNullOrEmpty(model.FileId))
+                    {
+                        await _fileService.DeleteFile(model.FileId);
+                    }
+                    
+                    var md = await _context.GoodsRepository.FirstOrDefaultAsync(m => m.Id == id);
+
+                    md.Code = model.Code;
+                    md.Name = model.Name;
+                    md.Brand = model.Brand;
+                    md.Color = model.Color;
+                    md.Size = model.Size;
+
+                    if (!string.IsNullOrEmpty(fileId))
+                    {
+                        md.FileId = new Guid(fileId);
+                    }
+
+                    md.UnitId = new Guid(model.UnitId);
+                    md.GoodsCategoryId = new Guid(model.GoodsCategoryId);
+                    md.Description = model.Description;
+                    md.IsActive = model.IsActive;
+                    md.UpdateBy = model.CurrentUserId;
+                    md.UpdateDate = DateTime.Now;
+
+                    _context.GoodsRepository.Update(md);
+                    await _context.SaveChangesAsync();
                 }
                 else
                 {
@@ -230,23 +255,29 @@ namespace WareHouse.Service
                         return response;
                     }
 
-                    await _context.GoodsRepository.AddAsync(new Goods()
+                    Goods md = new Goods();
+                    md.Id = Guid.NewGuid();
+                    md.Code = model.Code;
+                    md.Name = model.Name;
+                    md.Brand = model.Brand;
+                    md.Color = model.Color;
+                    md.Size = model.Size;
+
+                    if (!string.IsNullOrEmpty(fileId))
                     {
-                        Id = Guid.NewGuid(),
-                        Code = model.Code,
-                        Name = model.Name,
-                        Brand = model.Brand,
-                        Color = model.Color,
-                        Size = model.Size,
-                        //FileId = model.FileId.Length > 0 ? new Guid(model.FileId) : default(Guid),
-                        UnitId = new Guid(model.UnitId),
-                        GoodsCategoryId = new Guid(model.GoodsCategoryId),
-                        Description = model.Description,
-                        IsActive = model.IsActive,
-                        CreateBy = model.CurrentUserId,
-                        CreateDate = DateTime.Now,
-                        Deleted = false,
-                    }).ConfigureAwait(true);
+                        md.FileId = new Guid(fileId);
+                    }
+
+                    md.UnitId = new Guid(model.UnitId);
+                    md.GoodsCategoryId = new Guid(model.GoodsCategoryId);
+                    md.Description = model.Description;
+                    md.IsActive = model.IsActive;
+                    md.CreateBy = model.CurrentUserId;
+                    md.CreateDate = DateTime.Now;
+                    md.Deleted = false;
+
+                    await _context.GoodsRepository.AddAsync(md).ConfigureAwait(true);
+                    await _context.SaveChangesAsync();
                 }
 
                 await _context.SaveChangesAsync().ConfigureAwait(false);

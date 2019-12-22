@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace WareHouse.Service.Models
@@ -28,6 +29,8 @@ namespace WareHouse.Service.Models
         public string Size { get; set; }
 
         public string FileId { get; set; }
+
+        public IFormFile File { get; set; }
 
         public string FileUrl { get; set; }
 

@@ -1023,26 +1023,39 @@ namespace Warehouse.DataAccess
                             .HasColumnType("uniqueidentifier")
                             .IsRequired(true);
 
-                entity.Property(e => e.FileName)
-                            .HasColumnName("FileName")
-                            .HasMaxLength(150)
+                entity.Property(e => e.FileId)
+                            .HasColumnName("FileId")
+                            .HasMaxLength(100)
                             .IsRequired(true)
                             .IsUnicode(false);
 
+                entity.Property(e => e.FileName)
+                            .HasColumnName("FileName")
+                            .HasMaxLength(300)
+                            .IsRequired(true)
+                            .IsUnicode(true);
+
                 entity.Property(e => e.FileSystemName)
                             .HasColumnName("FileSystemName")
-                            .HasMaxLength(100)
+                            .HasMaxLength(300)
+                            .IsRequired(true)
+                            .IsUnicode(true);
+
+                entity.Property(e => e.FileExt)
+                            .HasColumnName("FileExt")
+                            .HasMaxLength(50)
                             .IsRequired(true)
                             .IsUnicode(false);
 
                 entity.Property(e => e.FilePath)
                             .HasColumnName("FilePath")
-                            .HasMaxLength(300)
-                            .IsRequired(true)
+                            .HasMaxLength(350)
+                            .IsRequired(false)
                             .IsUnicode(false);
 
                 entity.Property(e => e.Size)
-                            .HasColumnName("Size");
+                            .HasColumnName("Size")
+                            .HasColumnType("decimal(12, 0");
 
                 entity.Property(e => e.CreateBy)
                             .HasColumnName("CreateBy")

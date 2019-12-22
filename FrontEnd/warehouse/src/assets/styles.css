@@ -326,6 +326,28 @@ body .ui-datepicker table td>a:hover {
     background-color: #31701e !important;
 }
 
+.upload-btn-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.upload-btn-wrapper .btn {
+    padding: 4px 5px;
+}
+
+.upload-btn-wrapper .btn:hover {
+    cursor: pointer;
+}
+
+.upload-btn-wrapper input[type=file] {
+    font-size: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+}
+
 
 /* ----------------- End Control ----------------- */
 
