@@ -72,7 +72,7 @@ namespace WareHouse.Service
                                                        Code = m.Code,
                                                        Name = m.Name,
                                                        Description = m.Description ?? string.Empty,
-                                                       IsActive = m.IsActive,
+                                                       IsActive = m.IsActive ? "1" : "0",
                                                    });
 
                 if (filter.Text.Length > 0)
@@ -150,10 +150,14 @@ namespace WareHouse.Service
                 md.Brand = item.Brand;
                 md.Color = item.Color;
                 md.Size = item.Size;
-                md.FileId = item.FileId.HasValue ? item.FileId.ToString() : "";
+                if (item.FileId.HasValue)
+                {
+                    md.FileId = item.FileId.HasValue ? item.FileId.ToString() : "";
+                    md.FileContent = await _fileService.ImageContent(item.FileId.ToString());
+                }
                 md.UnitId = item.UnitId.ToString();
                 md.GoodsCategoryId = item.GoodsCategoryId.ToString();
-                md.IsActive = item.IsActive;
+                md.IsActive = item.IsActive ? "1" : "0";
                 md.RowVersion = item.RowVersion;
 
                 response.Result = md;
@@ -190,7 +194,7 @@ namespace WareHouse.Service
                     await _fileService.UploadFile(model.File, fileId, model.CurrentUserId);
                 }
                 
-                if (model.IsEdit)
+                if (model.IsEdit == Status.Update)
                 {
                     Guid id = new Guid(model.Id);
 
@@ -217,7 +221,7 @@ namespace WareHouse.Service
                         return response;
                     }
 
-                    if (!string.IsNullOrEmpty(model.FileId))
+                    if (!string.IsNullOrEmpty(model.FileId) && !string.IsNullOrEmpty(fileId))
                     {
                         await _fileService.DeleteFile(model.FileId);
                     }
@@ -229,6 +233,7 @@ namespace WareHouse.Service
                     md.Brand = model.Brand;
                     md.Color = model.Color;
                     md.Size = model.Size;
+                    md.Description = model.Description;
 
                     if (!string.IsNullOrEmpty(fileId))
                     {
@@ -238,7 +243,7 @@ namespace WareHouse.Service
                     md.UnitId = new Guid(model.UnitId);
                     md.GoodsCategoryId = new Guid(model.GoodsCategoryId);
                     md.Description = model.Description;
-                    md.IsActive = model.IsActive;
+                    md.IsActive = model.IsActive == "1" ? true : false;
                     md.UpdateBy = model.CurrentUserId;
                     md.UpdateDate = DateTime.Now;
 
@@ -262,6 +267,7 @@ namespace WareHouse.Service
                     md.Brand = model.Brand;
                     md.Color = model.Color;
                     md.Size = model.Size;
+                    md.Description = model.Description;
 
                     if (!string.IsNullOrEmpty(fileId))
                     {
@@ -271,7 +277,7 @@ namespace WareHouse.Service
                     md.UnitId = new Guid(model.UnitId);
                     md.GoodsCategoryId = new Guid(model.GoodsCategoryId);
                     md.Description = model.Description;
-                    md.IsActive = model.IsActive;
+                    md.IsActive = model.IsActive == "1" ? true : false;
                     md.CreateBy = model.CurrentUserId;
                     md.CreateDate = DateTime.Now;
                     md.Deleted = false;
@@ -323,7 +329,7 @@ namespace WareHouse.Service
                                                 .Where(m => m.Id == id)
                                                 .UpdateAsync(m => new Goods()
                                                 {
-                                                    IsActive = model.IsActive,
+                                                    IsActive = model.IsActive == "1" ? true : false,
                                                     UpdateBy = model.CurrentUserId,
                                                     UpdateDate = DateTime.Now,
                                                 }).ConfigureAwait(false);
@@ -365,6 +371,13 @@ namespace WareHouse.Service
                     response.Errors.Add(CommonMessage.ParameterInvalid);
                     response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
                     return response;
+                }
+
+                var uploadFile = await _context.GoodsRepository.FirstOrDefaultAsync(m => m.Id == id);
+
+                if (uploadFile.FileId.HasValue)
+                {
+                    await _fileService.DeleteFile(uploadFile.FileId.ToString());
                 }
 
                 await _context.GoodsRepository.Query()

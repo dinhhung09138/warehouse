@@ -37,8 +37,8 @@
                 <td>{{ item.code }}</td>
                 <td>{{ item.name }}</td>
                 <td class="text-center">
-                    <i *ngIf="item.isActive" class="fas fa-check"></i>
-                    <i *ngIf="!item.isActive" class="fas fa-minus-circle"></i>
+                    <i *ngIf="item.isActive === '1'" class="fas fa-check"></i>
+                    <i *ngIf="item.isActive === '0'" class="fas fa-minus-circle"></i>
                 </td>
                 <td class="text-center">
                     <button type="button" class="btn btn-tool edit-button" (click)="onUpdateClick(item)">

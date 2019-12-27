@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.ComponentModel.DataAnnotations;
+using WareHouse.Service.Constants;
 
 namespace WareHouse.Service.Models
 {
@@ -28,13 +29,11 @@ namespace WareHouse.Service.Models
         [MaxLength(200)]
         public string Size { get; set; }
 
-        public string FileId { get; set; }
-
         public IFormFile File { get; set; }
 
-        public string FileUrl { get; set; }
+        public string FileId { get; set; }
 
-        public string FileName { get; set; }
+        public string FileContent { get; set; }
 
         public string Description { get; set; }
 
@@ -49,12 +48,12 @@ namespace WareHouse.Service.Models
         public string GoodsCategoryName { get; set; }
 
         [Required]
-        public bool IsActive { get; set; }
+        public string IsActive { get; set; } = "1";
         
         public byte[] RowVersion { get; set; }
 
         public string CurrentUserId { get; set; }
 
-        public bool IsEdit { get; set; } = false;
+        public string IsEdit { get; set; } = Status.Insert;
     }
 }

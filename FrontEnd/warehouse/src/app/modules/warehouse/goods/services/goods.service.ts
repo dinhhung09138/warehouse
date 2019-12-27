@@ -40,10 +40,22 @@ export class GoodsService {
   save(model: GoodsModel, file: any): Observable<ResponseModel> {
 
     const formData = new FormData();
-    formData.append('file', file, file.name);
-    model.rowVersion  = file;
+    formData.append('id', model.id);
+    formData.append('code', model.code);
+    formData.append('name', model.name);
+    formData.append('brand', model.brand);
+    formData.append('color', model.color);
+    formData.append('size', model.size);
+    formData.append('description', model.description);
+    formData.append('unitId', model.unitId);
+    formData.append('goodsCategoryId', model.goodsCategoryId);
+    formData.append('fileId', model.fileId);
+    formData.append('File', file);
+    formData.append('isEdit', model.isEdit ? '1' : '0');
+    formData.append('isActive', model.isActive ? '1' : '0');
+    formData.append('rowVersion', model.rowVersion);
 
-    return this.http.post<ResponseModel>(this.url.save, model).pipe(map((data: ResponseModel) => {
+    return this.http.post<ResponseModel>(this.url.save, formData).pipe(map((data: ResponseModel) => {
       if (data.responseStatus === ResponseStatus.success) {
         this.saveSuccess.next(true);
       }

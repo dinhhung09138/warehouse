@@ -45,7 +45,7 @@
                 </div>
                 <div class="row">
                     <div class="col-12 form-group">
-                        <ng-select [items]="unitList" bindLabel="title" bindValue="value" [selectOnTab]="true" tabindex="3" formControlName="unitId" [clearable]="false" class="form-control" [ngClass]="{'is-invalid': submitted && goodsForm.controls['unitId'].errors}">
+                        <ng-select [items]="unitList" bindLabel="title" bindValue="value" [selectOnTab]="true" tabindex="3" formControlName="unitId" [loading]="unitLoading" [clearable]="false" class="form-control" [ngClass]="{'is-invalid': submitted && goodsForm.controls['unitId'].errors}">
 
                         </ng-select>
                         <div *ngIf="submitted && goodsForm.controls['unitId'].errors" class="invalid-feedback">
@@ -62,7 +62,7 @@
                 </div>
                 <div class="row">
                     <div class="col-12 form-group">
-                        <ng-select [items]="categoryList" bindLabel="title" bindValue="value" [selectOnTab]="true" tabindex="4" formControlName="goodsCategoryId" [clearable]="false" class="form-control" [ngClass]="{'is-invalid': submitted && goodsForm.controls['goodsCategoryId'].errors}">
+                        <ng-select [items]="categoryList" bindLabel="title" bindValue="value" [selectOnTab]="true" tabindex="4" formControlName="goodsCategoryId" [loading]="categoryLoading" [clearable]="false" class="form-control" [ngClass]="{'is-invalid': submitted && goodsForm.controls['goodsCategoryId'].errors}">
 
                         </ng-select>
                         <div *ngIf="submitted && goodsForm.controls['goodsCategoryId'].errors" class="invalid-feedback">

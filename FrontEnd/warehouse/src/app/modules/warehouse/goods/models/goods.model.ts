@@ -7,7 +7,7 @@ export class GoodsModel {
   color: string;
   size: string;
   fileId: string;
-  fileUrl: string;
+  fileContent: string;
   fileName: string;
   description: string;
   unitId: string;
@@ -26,7 +26,7 @@ export class GoodsModel {
     this.color = '';
     this.size = '';
     this.fileId = '';
-    this.fileUrl = '';
+    this.fileContent = '';
     this.fileName = '';
     this.description = '';
     this.unitId = '';

@@ -29,5 +29,12 @@ namespace WareHouse.Service.Interfaces
         /// <param name="fileId">File's id</param>
         /// <returns>ResponseModel object.</returns>
         Task<ResponseModel> DeleteFile(string fileId);
+
+        /// <summary>
+        /// Get Image content
+        /// </summary>
+        /// <param name="fileId">Image file's id</param>
+        /// <returns></returns>
+        Task<string> ImageContent(string fileId);
     }
 }

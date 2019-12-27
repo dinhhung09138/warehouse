@@ -174,12 +174,13 @@ namespace WareHouseApplication.Extensions
             services.AddScoped<IGoodsUnitService, GoodsUnitService>();
             services.AddScoped<IGoodsCategoryService, GoodsCategoryService>();
             services.AddScoped<IGoodsService, GoodsService>();
+            services.AddScoped<IFeeService, FeeService>();
+            services.AddScoped<IServerUploadFileService, ServerUploadFileService>();
             //
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<ICountryService, CountryService>();
             services.AddScoped<ICityService, CityService>();
-            services.AddScoped<IFeeService, FeeService>();
             return services;
         }
     }

@@ -77,11 +77,6 @@ namespace WareHouse.API
         [Route("save")]
         public async Task<IActionResult> Save([FromForm] GoodsModel model)
         {
-            if (Request.Form.Files != null && Request.Form.Files.Count > 0)
-            {
-                var file = Request.Form.Files[0];
-            }
-            
             if (model != null)
             {
                 model.CurrentUserId = CurrentUserId();

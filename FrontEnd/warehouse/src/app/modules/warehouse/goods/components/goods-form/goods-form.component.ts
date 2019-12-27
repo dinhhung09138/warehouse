@@ -27,7 +27,9 @@ export class GoodsFormComponent implements OnInit {
   formMessage = GoodsResource.form;
   goodsForm: FormGroup;
   warningMessage: any[];
+  unitLoading = false;
   unitList: ItemSelectModel[] = [];
+  categoryLoading = false;
   categoryList: ItemSelectModel[] = [];
 
   fileData: File = null;
@@ -50,6 +52,7 @@ export class GoodsFormComponent implements OnInit {
     this.initForm();
     this.getUnitList();
     this.getGoodsCategoryList();
+    this.onRefreshClick();
   }
 
   onSubmitForm() {
@@ -94,6 +97,10 @@ export class GoodsFormComponent implements OnInit {
     }
 
     this.loading.showLoading(true);
+
+    this.fileData = null;
+    this.previewUrl = null;
+
     this.goodsService.detail(this.goods.id).subscribe((response: ResponseModel) => {
       if (response.responseStatus === ResponseStatus.warning) {
         this.messageService.showWarning(response.errors.join(','));
@@ -103,10 +110,20 @@ export class GoodsFormComponent implements OnInit {
         this.loading.showLoading(false);
       } else {
         this.goods = response.result;
+        if(this.goods.fileContent) {
+          this.previewUrl = this.goods.fileContent;
+        }
         this.goodsForm.patchValue({
           id: response.result.id,
           code: response.result.code,
           name: response.result.name,
+          brand: response.result.brand,
+          color: response.result.color,
+          size: response.result.size,
+          fileId: response.result.fileId,
+          description: response.result.description,
+          unitId: response.result.unitId.toUpperCase(),
+          goodsCategoryId: response.result.goodsCategoryId.toUpperCase(),
           isEdit: this.isEdit,
           isActive: response.result.isActive,
           rowVersion: response.result.rowVersion,
@@ -129,6 +146,8 @@ export class GoodsFormComponent implements OnInit {
       brand: [this.goods.brand, [Validators.maxLength(200)]],
       color: [this.goods.color, [Validators.maxLength(200)]],
       size: [this.goods.size, [Validators.maxLength(200)]],
+      fileId: [this.goods.fileId],
+      description: [this.goods.description, [Validators.maxLength(500)]],
       isEdit: [this.isEdit],
       isActive: [this.goods.isActive],
       rowVersion: [this.goods.rowVersion],
@@ -136,62 +155,56 @@ export class GoodsFormComponent implements OnInit {
   }
 
   getUnitList() {
-    //this.loading.showLoading(true);
+    this.unitLoading = true;
     this.unitService.listCombobox().subscribe((response: ResponseModel) => {
-      console.log(response.result);
       if (response.responseStatus === ResponseStatus.warning) {
         this.messageService.showWarning(response.errors.join(','));
-        ///this.loading.showLoading(false);
       } else if (response.responseStatus === ResponseStatus.error) {
         this.messageService.showError(response.errors.join(','));
-        //this.loading.showLoading(false);
       } else {
         this.unitList = response.result;
-        //this.loading.showLoading(false);
       }
+      this.unitLoading = false;
     }, err => {
       console.log(err);
-     // this.loading.showLoading(false);
+      this.unitLoading = false;
     });
   }
 
   getGoodsCategoryList() {
-    //this.loading.showLoading(true);
+    this.categoryLoading = true;
     this.categoryService.listCombobox().subscribe((response: ResponseModel) => {
-      console.log(response.result);
       if (response.responseStatus === ResponseStatus.warning) {
         this.messageService.showWarning(response.errors.join(','));
-        ///this.loading.showLoading(false);
       } else if (response.responseStatus === ResponseStatus.error) {
         this.messageService.showError(response.errors.join(','));
-        //this.loading.showLoading(false);
       } else {
         this.categoryList = response.result;
-        //this.loading.showLoading(false);
       }
+      this.categoryLoading = false;
     }, err => {
       console.log(err);
-    // this.loading.showLoading(false);
+      this.categoryLoading = false;
     });
   }
 
   fileProgress(fileInput: any) {
-    this.fileData = <File>fileInput.target.files[0];
+    this.fileData = fileInput.target.files[0] as File;
     this.preview();
   }
 
   preview() {
     // Show preview
-    var mineType = this.fileData.type;
+    const mineType = this.fileData.type;
     if (mineType.match(/image\/*/) === null) {
       return;
     }
 
-    var reader = new FileReader();
+    const reader = new FileReader();
     reader.readAsDataURL(this.fileData);
     reader.onload = (_) => {
       this.previewUrl = reader.result;
-    }
+    };
   }
 
 }

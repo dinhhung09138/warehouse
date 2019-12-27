@@ -64,9 +64,9 @@ namespace WareHouse.Service
             var response = new ResponseModel();
             try
             {
-                string fileName = file.Name;
-                string fileExt = Path.GetExtension(file.Name).Replace(".", "");
-                string newFileName = $"{fileName}_{DateTime.Now.ToString("ddMMyyyyhhmmss")}.{fileExt}";
+                string fileName = file.FileName;
+                string fileExt = Path.GetExtension(file.FileName).Replace(".", "");
+                string newFileName = $"{DateTime.Now.ToString("ddMMyyyyhhmmss")}.{fileExt}";
 
                 string folderPath = _config[serverPathKeyConfig];
                 if (!Directory.Exists(folderPath))
@@ -85,6 +85,7 @@ namespace WareHouse.Service
                 uploadFile.Id = new Guid(fileId);
                 uploadFile.FileId = string.Empty;
                 uploadFile.FileName = fileName;
+                uploadFile.FileExt = fileExt;
                 uploadFile.FileSystemName = newFileName;
                 uploadFile.FilePath = filePath;
                 uploadFile.Size = file.Length;
@@ -141,5 +142,34 @@ namespace WareHouse.Service
             return response;
         }
 
+        /// <summary>
+        /// Get Image content
+        /// </summary>
+        /// <param name="fileId">Image file's id</param>
+        /// <returns></returns>
+        public async Task<string> ImageContent(string fileId)
+        {
+            try
+            {
+                Warehouse.DataAccess.Entities.File uploadFile = await _context.FileRepository.FirstOrDefaultAsync(m => m.Id == new Guid(fileId));
+
+                if (uploadFile == null)
+                {
+                    return string.Empty;
+                }
+
+                if (File.Exists(uploadFile.FilePath))
+                {
+                    var imgByte = await File.ReadAllBytesAsync(uploadFile.FilePath);
+                    return $"data:image/{uploadFile.FileExt};base64,{Convert.ToBase64String(imgByte)}";
+                }
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                _logger.AddErrorLog(this.GetType().Name, MethodBase.GetCurrentMethod().Name, fileId, ex);
+                return string.Empty;
+            }
+        }
     }
 }
