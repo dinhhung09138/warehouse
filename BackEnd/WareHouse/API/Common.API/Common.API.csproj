@@ -13,5 +13,5 @@
       <HintPath>..\..\Libs\Core.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
-  
+
 </Project>
