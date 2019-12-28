@@ -159,6 +159,7 @@ namespace WareHouseApplication.Extensions
         public static IServiceCollection InjectApplicationService(this IServiceCollection services)
         {
             services.AddSingleton<ConnectionMapping, ConnectionMapping>();
+            services.AddScoped<IServerUploadFileService, ServerUploadFileService>();
 
             services.AddScoped<IWareHouseUnitOfWork, WareHouseUnitOfWork>();
             services.AddScoped<IJwtTokenSecurityService, JwtTokenSecurityService>();
@@ -175,7 +176,7 @@ namespace WareHouseApplication.Extensions
             services.AddScoped<IGoodsCategoryService, GoodsCategoryService>();
             services.AddScoped<IGoodsService, GoodsService>();
             services.AddScoped<IFeeService, FeeService>();
-            services.AddScoped<IServerUploadFileService, ServerUploadFileService>();
+            services.AddScoped<IFileService, FileService>();
             //
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IDepartmentService, DepartmentService>();

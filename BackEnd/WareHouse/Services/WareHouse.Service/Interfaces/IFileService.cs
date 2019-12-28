@@ -10,7 +10,7 @@ namespace WareHouse.Service.Interfaces
     /// <summary>
     /// Server upload file service interface.
     /// </summary>
-    public interface IServerUploadFileService
+    public interface IFileService
     {
         /// <summary>
         /// Upload file to folder in the server.

@@ -17,7 +17,7 @@ namespace WareHouse.Service
     /// <summary>
     /// Server upload file service.
     /// </summary>
-    public class ServerUploadFileService : IServerUploadFileService
+    public class FileService : IFileService
     {
         /// <summary>
         /// Data context.
@@ -35,6 +35,11 @@ namespace WareHouse.Service
         private readonly IConfiguration _config;
 
         /// <summary>
+        /// Server file upload service.
+        /// </summary>
+        private readonly IServerUploadFileService _file;
+
+        /// <summary>
         /// Server config key.
         /// </summary>
         private readonly string serverPathKeyConfig = "UploadFolderPath";
@@ -44,11 +49,16 @@ namespace WareHouse.Service
         /// </summary>
         /// <param name="context">Data context.</param>
         /// <param name="logger">Log service.</param>
-        public ServerUploadFileService(IWareHouseUnitOfWork context, ILoggerService logger, IConfiguration config)
+        public FileService(
+            IWareHouseUnitOfWork context,
+            ILoggerService logger,
+            IConfiguration config,
+            IServerUploadFileService file)
         {
             _context = context;
             _logger = logger;
             _config = config;
+            _file = file;
         }
 
         /// <summary>
@@ -69,16 +79,12 @@ namespace WareHouse.Service
                 string newFileName = $"{DateTime.Now.ToString("ddMMyyyyhhmmss")}.{fileExt}";
 
                 string folderPath = _config[serverPathKeyConfig];
-                if (!Directory.Exists(folderPath))
-                {
-                    Directory.CreateDirectory(folderPath);
-                }
-
                 string filePath = Path.Combine(folderPath, newFileName);
 
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                response = await _file.UploadFile(file, folderPath, newFileName).ConfigureAwait(true);
+                if (response.ResponseStatus != Core.Common.Enums.ResponseStatus.Success)
                 {
-                    await file.CopyToAsync(stream);
+                    return response;
                 }
 
                 Warehouse.DataAccess.Entities.File uploadFile = new Warehouse.DataAccess.Entities.File();
@@ -124,9 +130,10 @@ namespace WareHouse.Service
                     return response;
                 }
 
-                if (File.Exists(uploadFile.FilePath))
+                response = await _file.DeleteFile(uploadFile.FilePath).ConfigureAwait(true);
+                if (response.ResponseStatus != Core.Common.Enums.ResponseStatus.Success)
                 {
-                    File.Delete(uploadFile.FilePath);
+                    return response;
                 }
 
                 _context.FileRepository.Delete(uploadFile);
@@ -158,12 +165,7 @@ namespace WareHouse.Service
                     return string.Empty;
                 }
 
-                if (File.Exists(uploadFile.FilePath))
-                {
-                    var imgByte = await File.ReadAllBytesAsync(uploadFile.FilePath);
-                    return $"data:image/{uploadFile.FileExt};base64,{Convert.ToBase64String(imgByte)}";
-                }
-                return string.Empty;
+                return await _file.ImageContent(uploadFile.FilePath, uploadFile.FileExt);
             }
             catch (Exception ex)
             {
