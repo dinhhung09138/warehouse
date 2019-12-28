@@ -53,30 +53,29 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-6">
+          <div class="col-6">
+            <div class="row">
+              <div class="col-12">
                 {{ formMessage.form.fax }}
-            </div>
-            <div class="col-6">
-                {{ formMessage.form.email }}
-            </div>
-        </div>
-        <div class="row form-group">
-            <div class="col-6">
+              </div>
+              <div class="col-12 form-group">
                 <input type="text" formControlName="fax" class="form-control" maxlength="20" tabindex="5" />
-            </div>
-            <div class="col-6">
-                <input type="text" formControlName="email" class="form-control" maxlength="50" tabindex="6" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-6">
+              </div>
+              <div class="col-12">
+                {{ formMessage.form.email }}
+              </div>
+              <div class="col-12 form-group">
+                <input type="text" required formControlName="email" class="form-control" maxlength="50" tabindex="6" [ngClass]="{'is-invalid': submitted && employeeForm.controls['email'].errors}" />
+                <div *ngIf="submitted && employeeForm.controls['email'].errors" class="invalid-feedback">
+                  <div *ngIf="employeeForm.controls['email'].errors.required">
+                  {{ formMessage.message.email }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
                 {{ formMessage.form.departmentId }}
-            </div>
-            <div class="col-6">
-            </div>
-        </div>
-        <div class="row form-group">
-            <div class="col-6">
+              </div>
+              <div class="col-12 form-group">
                 <ng-select [items]="departmentList" bindLabel="title" bindValue="value" [selectOnTab]="true" tabindex="7" formControlName="departmentId" [clearable]="false" class="form-control" [loading]="departmentLoading" [ngClass]="{'is-invalid': submitted && employeeForm.controls['departmentId'].errors}">
 
                 </ng-select>
@@ -85,31 +84,45 @@
                         {{ formMessage.message.departmentId }}
                     </div>
                 </div>
-            </div>
-            <div class="col-6">
-
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-6">
+              </div>
+              <div class="col-12">
                 {{ formMessage.form.dateOfJoin }}
-            </div>
-            <div class="col-6">
-                {{ formMessage.form.dateOfLeaving }}
-            </div>
-        </div>
-        <div class="row form-group">
-            <div class="col-6">
+              </div>
+              <div class="col-12 form-group">
                 <p-calendar formControlName="dateOfJoin" showButtonBar="true" [locale]="vnDate" showIcon="true" tabindex="8" [ngClass]="{'is-invalid': submitted && employeeForm.controls['dateOfJoin'].errors}"></p-calendar>
                 <div *ngIf="submitted && employeeForm.controls['dateOfJoin'].errors" class="invalid-feedback">
                     <div *ngIf="employeeForm.controls['dateOfJoin'].errors.required">
                         {{ formMessage.message.dateOfJoin }}
                     </div>
                 </div>
-            </div>
-            <div class="col-6">
+              </div>
+              <div class="col-12">
+                {{ formMessage.form.dateOfLeaving }}
+              </div>
+              <div class="col-12 form-group">
                 <p-calendar formControlName="dateOfLeaving" showButtonBar="true" [locale]="vnDate" showIcon="true" tabindex="9"></p-calendar>
+              </div>
             </div>
+          </div>
+          <div class="col-6">
+            <div class="row">
+              <div class="col-12">
+                <div class="form-group">
+                    <div class="upload-btn-wrapper">
+                        <button class="btn btn-primary"><i class="fas fa-upload"></i>&nbsp;{{ formMessage.form.avatar }}</button>
+                        <input type="file" name="myfile" (change)="fileProgress($event)" />
+                    </div>
+                </div>
+                <div class="image-preview mb-3" *ngIf="previewUrl">
+                    <img [src]="previewUrl" />
+                </div>
+              </div>
+              <div class="col-12">
+              </div>
+              <div class="col-12">
+              </div>
+            </div>
+          </div>
         </div>
         <div class="row">
             <div class="col-12">

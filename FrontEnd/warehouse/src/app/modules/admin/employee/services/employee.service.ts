@@ -7,6 +7,7 @@ import { ApiSetting } from 'src/app/core/api-setting';
 import { ResponseStatus } from 'src/app/core/enums/response.enum';
 import { EmployeeModel } from '../models/employee.model';
 import { FilterModel } from 'src/app/core/models/filter.model';
+import { DateTimeService } from 'src/app/core/services/datetime.service';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,7 @@ export class EmployeeService {
     delete: ApiSetting.apiRoot + 'admin/employee/delete',
   };
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private dateService: DateTimeService) { }
 
   list(filter: FilterModel): Observable<ResponseModel> {
     return this.http.post<ResponseModel>(this.url.list, filter).pipe(map((data: ResponseModel) => {
@@ -45,8 +46,26 @@ export class EmployeeService {
     }));
   }
 
-  save(model: EmployeeModel): Observable<ResponseModel> {
-    return this.http.post<ResponseModel>(this.url.save, model).pipe(map((data: ResponseModel) => {
+  save(model: EmployeeModel, file: any): Observable<ResponseModel> {
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('id', model.id);
+    formData.append('code', model.code);
+    formData.append('name', model.name);
+    formData.append('avatarFileId', model.avatarFileId);
+    formData.append('mobile', model.mobile || '');
+    formData.append('workPhone', model.workPhone || '');
+    formData.append('fax', model.fax || '');
+    formData.append('dateOfJoinString', this.dateService.convertDateToString(model.dateOfJoin));
+    formData.append('dateOfLeavingString', this.dateService.convertDateToString(model.dateOfLeaving));
+    formData.append('email', model.email || '');
+    formData.append('departmentId', model.departmentId);
+    formData.append('isEdit', model.isEdit ? '1' : '0');
+    formData.append('isActive', model.isActive ? '1' : '0');
+    formData.append('rowVersion', model.rowVersion);
+
+    return this.http.post<ResponseModel>(this.url.save, formData).pipe(map((data: ResponseModel) => {
       if (data.responseStatus === ResponseStatus.success) {
         this.saveSuccess.next(true);
       }

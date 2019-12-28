@@ -65,7 +65,7 @@ namespace Admin.API
         /// <returns>IActionResult.</returns>
         [HttpPost]
         [Route("save")]
-        public async Task<IActionResult> Save(EmployeeModel model)
+        public async Task<IActionResult> Save([FromForm] EmployeeModel model)
         {
           
             if (model != null)

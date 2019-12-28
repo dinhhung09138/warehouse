@@ -4,6 +4,7 @@ export class EmployeeModel {
   code: string;
   name: string;
   avatarFileId: string;
+  avatarContent: string;
   mobile: string;
   workPhone: string;
   fax: string;
@@ -21,6 +22,7 @@ export class EmployeeModel {
     this.code = '';
     this.name = '';
     this.avatarFileId = '';
+    this.avatarContent = '';
     this.mobile = '';
     this.workPhone = '';
     this.fax = '';

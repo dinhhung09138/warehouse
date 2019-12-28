@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Admin.Service.Constants;
 using Admin.Service.Interfaces;
 using Admin.Service.Models;
+using Core.Common.Constants;
 using Core.Common.Extensions;
 using Core.Common.Messages;
 using Core.Common.Models;
@@ -12,6 +13,7 @@ using Core.Common.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Warehouse.DataAccess;
 using Warehouse.DataAccess.Entities;
+using WareHouse.Service.Interfaces;
 using Z.EntityFramework.Plus;
 
 namespace Admin.Service
@@ -32,14 +34,20 @@ namespace Admin.Service
         private readonly ILoggerService _logger;
 
         /// <summary>
+        /// File service interface.
+        /// </summary>
+        private readonly IFileService _fileService;
+
+        /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
         /// <param name="context">Data context.</param>
         /// <param name="logger">Log service.</param>
-        public EmployeeService(IWareHouseUnitOfWork context, ILoggerService logger)
+        public EmployeeService(IWareHouseUnitOfWork context, ILoggerService logger, IFileService fileService)
         {
             _context = context;
             _logger = logger;
+            _fileService = fileService;
         }
 
         /// <summary>
@@ -71,7 +79,7 @@ namespace Admin.Service
                                 Mobile = empl.Mobile,
                                 Email = empl.Email,
                                 DepartmentName = dept.Name,
-                                IsActive = empl.IsActive,
+                                IsActive = empl.IsActive ? "1" : "0",
                                 RowVersion = empl.RowVersion,
                             };
 
@@ -145,7 +153,11 @@ namespace Admin.Service
                 md.Id = item.Id.ToString();
                 md.Name = item.Name;
                 md.Code = item.Code;
-                md.AvatarFileId = item.AvatarFileId.HasValue ? string.Empty : item.AvatarFileId.ToString();
+                if (item.AvatarFileId.HasValue)
+                {
+                    md.AvatarFileId = item.AvatarFileId.ToString();
+                    md.AvatarContent = await _fileService.ImageContent(item.AvatarFileId.ToString()).ConfigureAwait(false);
+                }
                 md.Mobile = item.Mobile;
                 md.WorkPhone = item.WorkPhone;
                 md.Fax = item.Fax;
@@ -153,7 +165,7 @@ namespace Admin.Service
                 md.DateOfLeaving = item.DateOfLeaving;
                 md.Email = item.Email;
                 md.DepartmentId = !item.DepartmentId.HasValue ? string.Empty : item.DepartmentId.ToString();
-                md.IsActive = item.IsActive;
+                md.IsActive = item.IsActive ? "1" : "0";
                 md.RowVersion = item.RowVersion;
 
                 response.Result = md;
@@ -182,7 +194,19 @@ namespace Admin.Service
                     throw new Exception(CommonMessage.ParameterInvalid);
                 }
 
-                if (model.IsEdit)
+                //DateOfJoinString alway have value
+                model.DateOfJoin = model.DateOfJoinString.ToDate().Value;
+                model.DateOfLeaving = model.DateOfLeavingString.ToDate();
+
+                string avatarId = string.Empty;
+
+                if (model.File != null)
+                {
+                    avatarId = Guid.NewGuid().ToString();
+                    await _fileService.UploadFile(model.File, avatarId, model.CurrentUserId).ConfigureAwait(false);
+                }
+
+                if (model.IsEdit == FormStatus.Update)
                 {
                     Guid id = new Guid(model.Id);
 
@@ -221,28 +245,38 @@ namespace Admin.Service
                         return response;
                     }
 
-                    await _context.EmployeeRepository.Query()
-                        .Where(m => m.Id == id)
-                        .UpdateAsync(m => new Employee()
-                        {
-                            Code = model.Code,
-                            Name = model.Name,
-                            AvatarFileId = null, // TOOD
-                            Mobile = model.Mobile,
-                            WorkPhone = model.WorkPhone,
-                            Fax = model.Fax,
-                            DateOfJoin = model.DateOfJoin.ToLocalTime(),
-                            DateOfLeaving = model.DateOfLeaving.HasValue ? model.DateOfLeaving.Value.ToLocalTime() : model.DateOfLeaving,
-                            Email = model.Email,
-                            DepartmentId = (model.DepartmentId.Length > 0 ? new Guid(model.DepartmentId) : default(Guid)),
-                            IsActive = model.IsActive,
-                            UpdateBy = model.CurrentUserId,
-                            UpdateDate = DateTime.Now,
-                        }).ConfigureAwait(true);
+                    if (!string.IsNullOrEmpty(model.AvatarFileId) && !string.IsNullOrEmpty(avatarId))
+                    {
+                        await _fileService.DeleteFile(model.AvatarFileId).ConfigureAwait(false);
+                    }
+
+                    var md = await _context.EmployeeRepository.FirstOrDefaultAsync(m => m.Id == id).ConfigureAwait(false);
+
+                    md.Code = model.Code;
+                    md.Name = model.Name;
+
+                    if (!string.IsNullOrEmpty(avatarId))
+                    {
+                        md.AvatarFileId = new Guid(avatarId);
+                    }
+
+                    md.Mobile = model.Mobile;
+                    md.WorkPhone = model.WorkPhone;
+                    md.Fax = model.Fax;
+                    md.DateOfJoin = model.DateOfJoin;
+                    md.DateOfLeaving = model.DateOfLeaving.HasValue ? model.DateOfLeaving.Value : model.DateOfLeaving;
+                    md.Email = model.Email;
+                    md.DepartmentId = (model.DepartmentId.Length > 0 ? new Guid(model.DepartmentId) : default(Guid));
+                    md.IsActive = model.IsActive == "1" ? true : false;
+                    md.UpdateBy = model.CurrentUserId;
+                    md.UpdateDate = DateTime.Now;
+
+                    _context.EmployeeRepository.Update(md);
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                 }
                 else
                 {
-                    var checkCode = await _context.EmployeeRepository.AnyAsync(m => m.Code == model.Code);
+                    var checkCode = await _context.EmployeeRepository.AnyAsync(m => m.Code == model.Code).ConfigureAwait(true);
                     if (checkCode)
                     {
                         response.Errors.Add(Message.CodeIsExists);
@@ -250,27 +284,33 @@ namespace Admin.Service
                         return response;
                     }
 
-                    await _context.EmployeeRepository.AddAsync(new Employee()
+                    Employee md = new Employee();
+
+                    md.Id = Guid.NewGuid();
+                    md.Code = model.Code;
+                    md.Name = model.Name;
+
+                    if (!string.IsNullOrEmpty(avatarId))
                     {
-                        Id = Guid.NewGuid(),
-                        Code = model.Code,
-                        Name = model.Name,
-                        AvatarFileId = null, // TOOD
-                        Mobile = model.Mobile,
-                        WorkPhone = model.WorkPhone,
-                        Fax = model.Fax,
-                        DateOfJoin = model.DateOfJoin.ToLocalTime(),
-                        DateOfLeaving = model.DateOfLeaving.HasValue ? model.DateOfLeaving.Value.ToLocalTime() : model.DateOfLeaving,
-                        Email = model.Email,
-                        DepartmentId = (model.DepartmentId.Length > 0 ? new Guid(model.DepartmentId) : default(Guid)),
-                        IsActive = model.IsActive,
-                        CreateBy = model.CurrentUserId,
-                        CreateDate = DateTime.Now,
-                        Deleted = false,
-                    }).ConfigureAwait(true);
+                        md.AvatarFileId = new Guid(avatarId);
+                    }
+
+                    md.Mobile = model.Mobile;
+                    md.WorkPhone = model.WorkPhone;
+                    md.Fax = model.Fax;
+                    md.DateOfJoin = model.DateOfJoin;
+                    md.DateOfLeaving = model.DateOfLeaving.HasValue ? model.DateOfLeaving.Value : model.DateOfLeaving;
+                    md.Email = model.Email;
+                    md.DepartmentId = (model.DepartmentId.Length > 0 ? new Guid(model.DepartmentId) : default(Guid));
+                    md.IsActive = model.IsActive == "1" ? true : false;
+                    md.CreateBy = model.CurrentUserId;
+                    md.CreateDate = DateTime.Now;
+                    md.Deleted = false;
+
+                    await _context.EmployeeRepository.AddAsync(md).ConfigureAwait(true);
+                    await _context.SaveChangesAsync();
                 }
 
-                await _context.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -313,7 +353,7 @@ namespace Admin.Service
                                                 .Where(m => m.Id == id)
                                                 .UpdateAsync(m => new Employee()
                                                 {
-                                                    IsActive = model.IsActive,
+                                                    IsActive = model.IsActive == "1" ? true : false,
                                                     UpdateBy = model.CurrentUserId,
                                                     UpdateDate = DateTime.Now,
                                                 }).ConfigureAwait(false);
@@ -355,6 +395,13 @@ namespace Admin.Service
                     response.Errors.Add(CommonMessage.IdNotFound);
                     response.ResponseStatus = Core.Common.Enums.ResponseStatus.Warning;
                     return response;
+                }
+
+                var md = await _context.EmployeeRepository.FirstOrDefaultAsync(m => m.Id == id).ConfigureAwait(true);
+
+                if (md.AvatarFileId.HasValue)
+                {
+                    await _fileService.DeleteFile(md.AvatarFileId.ToString());
                 }
 
                 await _context.EmployeeRepository.Query()

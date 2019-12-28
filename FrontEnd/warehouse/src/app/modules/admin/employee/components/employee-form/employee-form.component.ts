@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { EmployeeResource } from '../../employee.resource';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -11,13 +11,14 @@ import { ShowMessageService } from 'src/app/core/services/show-message.service';
 import { AppLicationSetting } from 'src/app/core/config/appication-setting.config';
 import { ItemSelectModel } from 'src/app/core/models/item-select.model';
 import { DepartmentService } from '../../../department/services/department.service';
+import { ImageFileService } from 'src/app/core/services/image-file.service';
 
 @Component({
   selector: 'app-employee-form',
   templateUrl: './employee-form.component.html',
   styleUrls: ['./employee-form.component.css']
 })
-export class EmployeeFormComponent implements OnInit {
+export class EmployeeFormComponent implements OnInit, OnDestroy {
 
   @Input() isEdit = false;
   @Input() employee: EmployeeModel;
@@ -29,6 +30,9 @@ export class EmployeeFormComponent implements OnInit {
   departmentLoading = false;
   departmentList: ItemSelectModel[] = [];
 
+  fileData: File = null;
+  previewUrl: any = null;
+
   vnDate = AppLicationSetting.timeZoneSetting;
 
   constructor(public activeModal: NgbActiveModal,
@@ -36,15 +40,26 @@ export class EmployeeFormComponent implements OnInit {
               private loading: LoadingService,
               private messageService: ShowMessageService,
               private employeeService: EmployeeService,
-              private departmentService: DepartmentService) { }
+              private departmentService: DepartmentService,
+              private imageService: ImageFileService) { }
 
   ngOnInit() {
     this.getDepartmentList();
-    if (this.isEdit == false) {
+    if (this.isEdit === false) {
       this.employee = new EmployeeModel(this.isEdit);
     }
+    this.imageService.changeImagePreview.subscribe((image) => {
+      setTimeout(() => {
+        this.previewUrl = image;
+      }, 1);
+    });
     this.initForm();
     this.reloadForm();
+  }
+
+  ngOnDestroy() {
+    this.previewUrl = null;
+    this.fileData = null;
   }
 
   onSubmitForm() {
@@ -58,7 +73,7 @@ export class EmployeeFormComponent implements OnInit {
     this.isLoading = true;
     this.loading.showLoading(true);
 
-    this.employeeService.save(this.employeeForm.value).subscribe((response: ResponseModel) => {
+    this.employeeService.save(this.employeeForm.value, this.fileData).subscribe((response: ResponseModel) => {
       if (response.responseStatus === ResponseStatus.warning) {
         this.warningMessage.push({severity: 'warn', summary: 'Warning', detail: response.errors.join(',')});
         this.loading.showLoading(false);
@@ -85,7 +100,13 @@ export class EmployeeFormComponent implements OnInit {
     this.reloadForm();
   }
 
+  fileProgress(fileInput: any) {
+    this.fileData = fileInput.target.files[0] as File;
+    this.previewUrl = this.imageService.preview(this.fileData);
+  }
+
   private initForm() {
+
     this.employeeForm = this.fb.group({
       id: [this.employee.id ],
       code: [this.employee.code, [Validators.required, Validators.maxLength(20)]],
@@ -107,6 +128,8 @@ export class EmployeeFormComponent implements OnInit {
     if (this.isEdit === false) {
       return;
     }
+    this.fileData = null;
+    this.previewUrl = null;
 
     this.loading.showLoading(true);
     this.employeeService.detail(this.employee.id).subscribe((response: ResponseModel) => {
@@ -118,6 +141,13 @@ export class EmployeeFormComponent implements OnInit {
         this.loading.showLoading(false);
       } else {
         this.employee = response.result;
+
+        if (this.employee.avatarContent) {
+          this.previewUrl = this.employee.avatarContent;
+        } else {
+          this.previewUrl = null;
+        }
+
         this.employeeForm.patchValue({
           id: response.result.id,
           code: response.result.code,

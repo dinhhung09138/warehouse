@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Core.Common.Constants;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace Admin.Service.Models
 {
@@ -22,6 +22,10 @@ namespace Admin.Service.Models
 
         public string AvatarFileId { get; set; }
 
+        public string AvatarContent { get; set; }
+
+        public IFormFile File { get; set; }
+
         [MaxLength(20)]
         public string Mobile { get; set; }
 
@@ -33,7 +37,11 @@ namespace Admin.Service.Models
 
         public DateTime DateOfJoin { get; set; }
 
+        public string DateOfJoinString { get; set; }
+
         public DateTime? DateOfLeaving { get; set; }
+
+        public string DateOfLeavingString { get; set; }
 
         [MaxLength(50)]
         public string Email { get; set; }
@@ -43,12 +51,13 @@ namespace Admin.Service.Models
 
         public string DepartmentName { get; set; }
 
-        public bool IsActive { get; set; }
+        [Required]
+        public string IsActive { get; set; } = "1";
 
         public byte[] RowVersion { get; set; }
 
         public string CurrentUserId { get; set; }
 
-        public bool IsEdit { get; set; } = false;
+        public string IsEdit { get; set; } = FormStatus.Insert;
     }
 }

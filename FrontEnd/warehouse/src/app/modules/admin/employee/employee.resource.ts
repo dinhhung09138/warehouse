@@ -30,6 +30,7 @@ export class EmployeeResource {
       email: 'Email',
       workPhone: 'WorkPhone',
       fax: 'Fax',
+      avatar: 'Avatar',
       dateOfJoin: 'Date Of Join',
       dateOfLeaving: 'Date Of Leaving',
       departmentId: 'Department',
@@ -38,6 +39,7 @@ export class EmployeeResource {
     message: {
       code: 'Code is required',
       name: 'Name is required',
+      email: 'Email is required',
       departmentId: 'Department is required',
       dateOfJoin: 'Date of join is required',
       saveSuccess: SharedResource.formMessage.saveSuccess,

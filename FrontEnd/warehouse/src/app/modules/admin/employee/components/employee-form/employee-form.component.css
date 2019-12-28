@@ -1,0 +1,10 @@
+.image-preview {
+    width: 100px;
+    height: auto;
+    ;
+}
+
+.image-preview img {
+    width: 100%;
+    height: auto;
+}

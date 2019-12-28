@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { EmployeeListComponent } from './components/employee-list/employee-list.component';
 import { EmployeeFormComponent } from './components/employee-form/employee-form.component';
 import { Routes, RouterModule } from '@angular/router';
@@ -15,6 +15,8 @@ import { MessagesModule } from 'primeng/messages';
 import { CalendarModule } from 'primeng/calendar';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { DepartmentService } from '../department/services/department.service';
+import { DateTimeService } from 'src/app/core/services/datetime.service';
+import { ImageFileService } from 'src/app/core/services/image-file.service';
 
 
 const routes: Routes = [
@@ -30,8 +32,11 @@ const routes: Routes = [
     EmployeeFormComponent,
   ],
   providers: [
+    DatePipe,
     EmployeeService,
     DepartmentService,
+    DateTimeService,
+    ImageFileService,
   ],
   imports: [
     CommonModule,
