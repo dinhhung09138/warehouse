@@ -15,6 +15,7 @@ import { MessagesModule } from 'primeng/messages';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgOptionHighlightModule } from '@ng-select/ng-option-highlight';
 import { UnitService } from '../unit/services/unit.service';
+import { ImageFileService } from 'src/app/core/services/image-file.service';
 
 const routes: Routes = [
   { path: '', component: GoodsListComponent, pathMatch: 'full' }
@@ -31,6 +32,7 @@ const routes: Routes = [
   providers: [
     GoodsService,
     UnitService,
+    ImageFileService,
   ],
   imports: [
     CommonModule,

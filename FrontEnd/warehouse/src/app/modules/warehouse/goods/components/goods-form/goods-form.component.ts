@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { GoodsResource } from '../../goods.resource';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -12,13 +12,14 @@ import { ItemSelectModel } from 'src/app/core/models/item-select.model';
 import { UnitService } from '../../../unit/services/unit.service';
 import { ThrowStmt, ReadVarExpr } from '@angular/compiler';
 import { GoodsCategoryService } from '../../../goods-category/services/goods-category.service';
+import { ImageFileService } from 'src/app/core/services/image-file.service';
 
 @Component({
   selector: 'app-goods-form',
   templateUrl: './goods-form.component.html',
   styleUrls: ['./goods-form.component.css']
 })
-export class GoodsFormComponent implements OnInit {
+export class GoodsFormComponent implements OnInit, OnDestroy {
 
   @Input() isEdit = false;
   @Input() goods: GoodsModel;
@@ -34,8 +35,6 @@ export class GoodsFormComponent implements OnInit {
 
   fileData: File = null;
   previewUrl: any = null;
-  fileUploadProgress: string = null;
-  uploadedFilePath: string = null;
 
   constructor(public activeModal: NgbActiveModal,
               private fb: FormBuilder,
@@ -43,16 +42,27 @@ export class GoodsFormComponent implements OnInit {
               private messageService: ShowMessageService,
               private goodsService: GoodsService,
               private unitService: UnitService,
-              private categoryService: GoodsCategoryService) { }
+              private categoryService: GoodsCategoryService,
+              private imageService: ImageFileService) { }
 
   ngOnInit() {
     if (this.isEdit === false) {
       this.goods = new GoodsModel(this.isEdit);
     }
+    this.imageService.changeImagePreview.subscribe(image => {
+      setTimeout(() => {
+        this.previewUrl = image;
+      }, 1);
+    });
     this.initForm();
     this.getUnitList();
     this.getGoodsCategoryList();
     this.onRefreshClick();
+  }
+
+  ngOnDestroy() {
+    this.previewUrl = null;
+    this.fileData = null;
   }
 
   onSubmitForm() {
@@ -110,9 +120,13 @@ export class GoodsFormComponent implements OnInit {
         this.loading.showLoading(false);
       } else {
         this.goods = response.result;
-        if(this.goods.fileContent) {
+
+        if (this.goods.fileContent) {
           this.previewUrl = this.goods.fileContent;
+        } else {
+          this.previewUrl = null;
         }
+
         this.goodsForm.patchValue({
           id: response.result.id,
           code: response.result.code,
@@ -190,21 +204,7 @@ export class GoodsFormComponent implements OnInit {
 
   fileProgress(fileInput: any) {
     this.fileData = fileInput.target.files[0] as File;
-    this.preview();
-  }
-
-  preview() {
-    // Show preview
-    const mineType = this.fileData.type;
-    if (mineType.match(/image\/*/) === null) {
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.readAsDataURL(this.fileData);
-    reader.onload = (_) => {
-      this.previewUrl = reader.result;
-    };
+    this.imageService.preview(this.fileData);
   }
 
 }

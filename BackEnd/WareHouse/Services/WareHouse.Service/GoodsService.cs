@@ -13,6 +13,7 @@ using Warehouse.DataAccess.Entities;
 using Z.EntityFramework.Plus;
 using WareHouse.Service.Constants;
 using Microsoft.EntityFrameworkCore;
+using Core.Common.Constants;
 
 namespace WareHouse.Service
 {
@@ -34,7 +35,7 @@ namespace WareHouse.Service
         /// <summary>
         /// File service.
         /// </summary>
-        private readonly IServerUploadFileService _fileService;
+        private readonly IFileService _fileService;
 
         /// <summary>
         /// Initializes a new instance of the class.
@@ -42,7 +43,7 @@ namespace WareHouse.Service
         /// <param name="context">Data context.</param>
         /// <param name="logger">Log service.</param>
         /// <param name="fileService">File service interface.</param>
-        public GoodsService(IWareHouseUnitOfWork context, ILoggerService logger, IServerUploadFileService fileService)
+        public GoodsService(IWareHouseUnitOfWork context, ILoggerService logger, IFileService fileService)
         {
             _context = context;
             _logger = logger;
@@ -153,7 +154,7 @@ namespace WareHouse.Service
                 if (item.FileId.HasValue)
                 {
                     md.FileId = item.FileId.HasValue ? item.FileId.ToString() : "";
-                    md.FileContent = await _fileService.ImageContent(item.FileId.ToString());
+                    md.FileContent = await _fileService.ImageContent(item.FileId.ToString()).ConfigureAwait(false);
                 }
                 md.UnitId = item.UnitId.ToString();
                 md.GoodsCategoryId = item.GoodsCategoryId.ToString();
@@ -191,10 +192,10 @@ namespace WareHouse.Service
                 if (model.File != null)
                 {
                     fileId = Guid.NewGuid().ToString();
-                    await _fileService.UploadFile(model.File, fileId, model.CurrentUserId);
+                    await _fileService.UploadFile(model.File, fileId, model.CurrentUserId).ConfigureAwait(false);
                 }
                 
-                if (model.IsEdit == Status.Update)
+                if (model.IsEdit == FormStatus.Update)
                 {
                     Guid id = new Guid(model.Id);
 
@@ -223,10 +224,10 @@ namespace WareHouse.Service
 
                     if (!string.IsNullOrEmpty(model.FileId) && !string.IsNullOrEmpty(fileId))
                     {
-                        await _fileService.DeleteFile(model.FileId);
+                        await _fileService.DeleteFile(model.FileId).ConfigureAwait(false);
                     }
                     
-                    var md = await _context.GoodsRepository.FirstOrDefaultAsync(m => m.Id == id);
+                    var md = await _context.GoodsRepository.FirstOrDefaultAsync(m => m.Id == id).ConfigureAwait(false);
 
                     md.Code = model.Code;
                     md.Name = model.Name;
@@ -248,11 +249,11 @@ namespace WareHouse.Service
                     md.UpdateDate = DateTime.Now;
 
                     _context.GoodsRepository.Update(md);
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                 }
                 else
                 {
-                    var checkCode = await _context.GoodsRepository.AnyAsync(m => m.Code == model.Code);
+                    var checkCode = await _context.GoodsRepository.AnyAsync(m => m.Code == model.Code).ConfigureAwait(true);
                     if (checkCode)
                     {
                         response.Errors.Add(Message.CodeIsExists);
@@ -373,11 +374,11 @@ namespace WareHouse.Service
                     return response;
                 }
 
-                var uploadFile = await _context.GoodsRepository.FirstOrDefaultAsync(m => m.Id == id);
+                var md = await _context.GoodsRepository.FirstOrDefaultAsync(m => m.Id == id).ConfigureAwait(true);
 
-                if (uploadFile.FileId.HasValue)
+                if (md.FileId.HasValue)
                 {
-                    await _fileService.DeleteFile(uploadFile.FileId.ToString());
+                    await _fileService.DeleteFile(md.FileId.ToString());
                 }
 
                 await _context.GoodsRepository.Query()

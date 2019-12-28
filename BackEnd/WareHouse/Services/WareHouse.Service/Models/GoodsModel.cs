@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
+﻿using Core.Common.Constants;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
-using WareHouse.Service.Constants;
 
 namespace WareHouse.Service.Models
 {
@@ -54,6 +53,6 @@ namespace WareHouse.Service.Models
 
         public string CurrentUserId { get; set; }
 
-        public string IsEdit { get; set; } = Status.Insert;
+        public string IsEdit { get; set; } = FormStatus.Insert;
     }
 }

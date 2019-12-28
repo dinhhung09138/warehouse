@@ -8,7 +8,6 @@ export class GoodsModel {
   size: string;
   fileId: string;
   fileContent: string;
-  fileName: string;
   description: string;
   unitId: string;
   unitName: string;
@@ -27,7 +26,6 @@ export class GoodsModel {
     this.size = '';
     this.fileId = '';
     this.fileContent = '';
-    this.fileName = '';
     this.description = '';
     this.unitId = '';
     this.unitName = '';
