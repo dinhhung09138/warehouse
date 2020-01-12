@@ -26,3 +26,7 @@ BackEnd/WareHouse/Services/Customer.Service/obj/
 BackEnd/WareHouse/Services/Customer.Service/bin/
 BackEnd/WareHouse/Services/PurchaseOrder.Service/bin/
 BackEnd/WareHouse/WareHouse/Log/
+BackEnd/WareHouse/API/Order.API/bin/
+BackEnd/WareHouse/API/Order.API/obj/
+BackEnd/WareHouse/Services/Order.Service/bin/
+BackEnd/WareHouse/Services/Order.Service/obj/
