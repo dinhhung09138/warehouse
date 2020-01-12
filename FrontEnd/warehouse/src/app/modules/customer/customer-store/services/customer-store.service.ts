@@ -16,7 +16,6 @@ export class CustomerStoreService {
   private saveSuccess = new BehaviorSubject(false);
   reloadGrid = this.saveSuccess.asObservable();
 
-
   url = {
     list: ApiSetting.apiRoot + 'customer/store/list',
     listCombobox: ApiSetting.apiRoot + 'customer/store/list-combobox',

@@ -1,4 +1,5 @@
-﻿using Core.Common.Extensions;
+﻿using Core.Common.Constants;
+using Core.Common.Extensions;
 using Core.Common.Helpers;
 using Core.Common.Messages;
 using Core.Common.Models;
@@ -15,6 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Warehouse.DataAccess;
 using Warehouse.DataAccess.Entities;
+using WareHouse.Service.Interfaces;
 using Z.EntityFramework.Plus;
 
 namespace Customer.Service
@@ -35,14 +37,21 @@ namespace Customer.Service
         private readonly ILoggerService _logger;
 
         /// <summary>
+        /// File service.
+        /// </summary>
+        private readonly IFileService _fileService;
+
+        /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
         /// <param name="context">Data context.</param>
         /// <param name="logger">Log service.</param>
-        public CustomerEmployeeService(IWareHouseUnitOfWork context, ILoggerService logger)
+        /// <param name="fileService">File service interface.</param>
+        public CustomerEmployeeService(IWareHouseUnitOfWork context, ILoggerService logger, IFileService fileService)
         {
             _context = context;
             _logger = logger;
+            _fileService = fileService;
         }
 
         /// <summary>
@@ -65,7 +74,7 @@ namespace Customer.Service
                             on cus.CustomerStoreId equals store.Id
                             into stores
                             from store in stores.DefaultIfEmpty()
-                            where cus.Deleted == false && cus.CreateBy == filter.CustomerId
+                            where cus.Deleted == false && cus.ClientId == new Guid(filter.ClientId)
                             select new CustomerEmployeeModel
                             {
                                 Id = cus.Id.ToString(),
@@ -75,7 +84,7 @@ namespace Customer.Service
                                 UserName = cus.UserName,
                                 Email = cus.Email,
                                 StartOn = cus.StartOn,
-                                IsActive = cus.IsActive,
+                                IsActive = cus.IsActive ? "1" : "0",
                                 CustomerStoreName = store.Id != null ? store.Name.ToString() : string.Empty,
                             };
 
@@ -105,15 +114,15 @@ namespace Customer.Service
         /// <summary>
         /// Get list of customer employee data to show on combobox.
         /// </summary>
-        /// <param name="customerId">Customer's id</param>
+        /// <param name="clientId">Client Id.</param>
         /// <returns>ResponseModel object.</returns>
-        public async Task<ResponseModel> ListCombobox(string customerId)
+        public async Task<ResponseModel> ListCombobox(string clientId)
         {
             var response = new ResponseModel();
             try
             {
                 var query = _context.CustomerEmployeeRepository.Query()
-                                                   .Where(m => m.Deleted == false && m.IsActive == true && m.CreateBy == customerId)
+                                                   .Where(m => m.Deleted == false && m.IsActive == true && m.ClientId == new Guid(clientId))
                                                    .Select(m => new SelectedItemModel
                                                    {
                                                        Value = m.Id.ToString(),
@@ -135,16 +144,16 @@ namespace Customer.Service
         /// Get customer employee detail.
         /// </summary>
         /// <param name="id">Customer employee's id.</param>
-        /// <param name="customerId">Customer's id</param>
+        /// <param name="clientId">Client Id.</param>
         /// <returns>ResponseModel object.</returns>
-        public async Task<ResponseModel> Detail(Guid id, string customerId)
+        public async Task<ResponseModel> Detail(Guid id, string clientId)
         {
             var response = new ResponseModel();
             try
             {
                 var item = await _context.CustomerEmployeeRepository.FirstOrDefaultAsync(m => m.Deleted == false
                                                                                                 && m.Id == id
-                                                                                                && m.CreateBy == customerId)
+                                                                                                && m.ClientId == new Guid(clientId))
                                                             .ConfigureAwait(false);
 
                 if (item == null)
@@ -156,6 +165,11 @@ namespace Customer.Service
                 md.Id = item.Id.ToString();
                 md.Code = item.Code;
                 md.Name = item.Name;
+                if (item.AvatarFileId.HasValue)
+                {
+                    md.AvatarFileId = item.AvatarFileId.HasValue ? item.AvatarFileId.ToString() : string.Empty;
+                    md.AvatarFileContent = await _fileService.ImageContent(item.AvatarFileId.ToString()).ConfigureAwait(false);
+                }
                 md.AvatarFileId = item.AvatarFileId.HasValue ? string.Empty : item.AvatarFileId.ToString();
                 md.Phone = item.Phone;
                 md.Email = item.Email;
@@ -163,7 +177,7 @@ namespace Customer.Service
                 md.StartOn = item.StartOn;
                 md.Email = item.Email;
                 md.CustomerStoreId = !item.CustomerStoreId.HasValue ? string.Empty : item.CustomerStoreId.ToString();
-                md.IsActive = item.IsActive;
+                md.IsActive = item.IsActive ? "1" : "0";
                 md.RowVersion = item.RowVersion;
 
                 response.Result = md;
@@ -192,13 +206,23 @@ namespace Customer.Service
                     throw new Exception(CommonMessage.ParameterInvalid);
                 }
 
-                if (model.IsEdit)
+                model.StartOn = model.StartOnString.ToDate();
+
+                string fileId = string.Empty;
+
+                if (model.File != null)
+                {
+                    fileId = Guid.NewGuid().ToString();
+                    await _fileService.UploadFile(model.File, fileId, model.CurrentUserId).ConfigureAwait(false);
+                }
+
+                if (model.IsEdit == FormStatus.Update)
                 {
                     Guid id = new Guid(model.Id);
 
                     var checkExists = await _context.CustomerEmployeeRepository
                                                         .AnyAsync(m => m.Id == id 
-                                                                       && m.CreateBy == model.CurrentUserId)
+                                                                       && m.ClientId == new Guid(model.ClientId))
                                                         .ConfigureAwait(false);
 
                     if (!checkExists)
@@ -210,7 +234,7 @@ namespace Customer.Service
 
                     var checkCurrent = await _context.CustomerEmployeeRepository
                                                         .AnyAsync(m => m.Id == id
-                                                                       && m.CreateBy == model.CurrentUserId
+                                                                       && m.ClientId == new Guid(model.ClientId)
                                                                        && m.RowVersion != model.RowVersion)
                                                         .ConfigureAwait(false);
 
@@ -223,7 +247,7 @@ namespace Customer.Service
                     
                     checkExists = await _context.CustomerEmployeeRepository
                                                         .AnyAsync(m => m.Id != id
-                                                                       && m.CreateBy == model.CurrentUserId
+                                                                       && m.ClientId == new Guid(model.ClientId)
                                                                        && m.Code == model.Code)
                                                         .ConfigureAwait(false);
 
@@ -234,26 +258,40 @@ namespace Customer.Service
                         return response;
                     }
 
-                    await _context.CustomerEmployeeRepository.Query()
-                        .Where(m => m.Id == id)
-                        .UpdateAsync(m => new CustomerEmployee()
-                        {
-                            Code = model.Code,
-                            Name = model.Name,
-                            AvatarFileId = null, // TOOD
-                            Phone = model.Phone,
-                            Email = model.Email,
-                            StartOn = model.StartOn.HasValue ? model.StartOn.Value.ToLocalTime() : model.StartOn,
-                            CustomerStoreId = (model.CustomerStoreId.Length > 0 ? new Guid(model.CustomerStoreId) : default(Guid)),
-                            IsActive = model.IsActive,
-                            UpdateBy = model.CurrentUserId,
-                            UpdateDate = DateTime.Now,
-                        }).ConfigureAwait(false);
+                    if (!string.IsNullOrEmpty(model.AvatarFileId) && !string.IsNullOrEmpty(fileId))
+                    {
+                        await _fileService.DeleteFile(model.AvatarFileId).ConfigureAwait(false);
+                    }
+
+                    var md = await _context.CustomerEmployeeRepository.FirstOrDefaultAsync(m => m.Id == id 
+                                                                                                && m.ClientId == new Guid(model.ClientId))
+                                                                      .ConfigureAwait(false);
+                    md.Code = model.Code;
+                    md.Name = model.Name;
+
+                    if (!string.IsNullOrEmpty(fileId))
+                    {
+                        md.AvatarFileId = new Guid(fileId);
+                    }
+
+                    md.Phone = model.Phone;
+                    md.Email = model.Email;
+                    md.StartOn = model.StartOn;
+                    if (!string.IsNullOrEmpty(model.CustomerStoreId))
+                    {
+                        md.CustomerStoreId = new Guid(model.CustomerStoreId);
+                    }
+                    md.IsActive = model.IsActive == "1" ? true : false;
+                    md.UpdateBy = model.CurrentUserId;
+                    md.UpdateDate = DateTime.Now;
+
+                    _context.CustomerEmployeeRepository.Update(md);
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                 }
                 else
                 {
                     var checkExists = await _context.CustomerEmployeeRepository
-                                                        .AnyAsync(m => m.CreateBy == model.CurrentUserId
+                                                        .AnyAsync(m => m.ClientId == new Guid(model.ClientId)
                                                                        && m.Code == model.Code)
                                                         .ConfigureAwait(false);
 
@@ -271,26 +309,33 @@ namespace Customer.Service
                         password = PasswordSecurityHelper.GetHashedPassword(model.Password);
                     }
 
-                    await _context.CustomerEmployeeRepository.AddAsync(new CustomerEmployee()
-                    {
-                        Id = Guid.NewGuid(),
-                        Code = model.Code,
-                        Name = model.Name,
-                        AvatarFileId = null, // TOOD
-                        Phone = model.Phone,
-                        Email = model.Email,
-                        StartOn = model.StartOn.HasValue ? model.StartOn.Value.ToLocalTime() : model.StartOn,
-                        CustomerStoreId = (model.CustomerStoreId.Length > 0 ? new Guid(model.CustomerStoreId) : default(Guid)),
-                        UserName = model.UserName,
-                        Password = password,
-                        IsActive = model.IsActive,
-                        CreateBy = model.CurrentUserId,
-                        CreateDate = DateTime.Now,
-                        Deleted = false,
-                    }).ConfigureAwait(false);
-                }
+                    CustomerEmployee md = new CustomerEmployee();
+                    md.Id = Guid.NewGuid();
+                    md.Code = model.Code;
+                    md.Name = model.Name;
 
-                await _context.SaveChangesAsync().ConfigureAwait(false);
+                    if (!string.IsNullOrEmpty(fileId))
+                    {
+                        md.AvatarFileId = new Guid(fileId);
+                    }
+
+                    md.Phone = model.Phone;
+                    md.Email = model.Email;
+                    md.StartOn = model.StartOn;
+                    if (!string.IsNullOrEmpty(model.CustomerStoreId))
+                    {
+                        md.CustomerStoreId = new Guid(model.CustomerStoreId);
+                    }
+                    md.IsActive = model.IsActive == "1" ? true : false;
+                    md.UserName = model.UserName;
+                    md.Password = password;
+                    md.CreateBy = model.CurrentUserId;
+                    md.UpdateDate = DateTime.Now;
+                    md.Deleted = false;
+
+                    await _context.CustomerEmployeeRepository.AddAsync(md).ConfigureAwait(false);
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
+                }
             }
             catch (Exception ex)
             {
@@ -319,7 +364,7 @@ namespace Customer.Service
                 Guid id = new Guid(model.Id);
 
                 var checkExists = await _context.CustomerEmployeeRepository
-                                                            .AnyAsync(m => m.Id == id)
+                                                            .AnyAsync(m => m.Id == id && m.ClientId == new Guid(model.ClientId))
                                                             .ConfigureAwait(true);
 
                 if (!checkExists)
@@ -332,7 +377,7 @@ namespace Customer.Service
                 await _context.CustomerEmployeeRepository.Query().Where(m => m.Id == id)
                                                          .UpdateAsync(m => new CustomerEmployee()
                                                          {
-                                                             IsActive = model.IsActive,
+                                                             IsActive = model.IsActive== "1" ? true : false,
                                                              UpdateBy = model.CurrentUserId,
                                                              UpdateDate = DateTime.Now,
                                                          }).ConfigureAwait(false);
@@ -368,7 +413,7 @@ namespace Customer.Service
 
                 var checkExists = await _context.CustomerEmployeeRepository
                                                             .AnyAsync(m => m.Id == id 
-                                                                           && m.CreateBy == model.CurrentUserId)
+                                                                           && m.ClientId == new Guid(model.ClientId))
                                                             .ConfigureAwait(true);
 
                 if (!checkExists)
@@ -380,7 +425,7 @@ namespace Customer.Service
 
                 checkExists = await _context.CustomerEmployeeRepository
                                                             .AnyAsync(m => m.UserName == model.UserName 
-                                                                           && m.CreateBy == model.CurrentUserId
+                                                                           && m.ClientId == new Guid(model.ClientId)
                                                                            && m.Deleted == false)
                                                             .ConfigureAwait(true);
 
@@ -431,7 +476,7 @@ namespace Customer.Service
 
                 var checkExists = await _context.CustomerEmployeeRepository
                                                             .AnyAsync(m => m.Id == id
-                                                                           && m.CreateBy == model.CurrentUserId)
+                                                                           && m.ClientId == new Guid(model.ClientId))
                                                             .ConfigureAwait(true);
 
                 if (!checkExists)
@@ -479,7 +524,7 @@ namespace Customer.Service
 
                 var checkExists = await _context.CustomerEmployeeRepository
                                                         .AnyAsync(m => m.Id == id 
-                                                                       && m.CreateBy == model.CurrentUserId)
+                                                                       && m.ClientId == new Guid(model.ClientId))
                                                         .ConfigureAwait(true);
 
                 if (!checkExists)

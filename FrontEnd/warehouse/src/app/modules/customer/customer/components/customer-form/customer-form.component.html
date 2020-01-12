@@ -44,7 +44,12 @@
                 <input type="text" formControlName="secondaryPhone" class="form-control" maxlength="20" tabindex="3" />
             </div>
             <div class="col-4">
-                <input type="text" formControlName="userName" class="form-control" maxlength="50" tabindex="8" />
+                <input type="text" formControlName="userName" class="form-control" maxlength="50" tabindex="8" [ngClass]="{'is-invalid': submitted && customerForm.controls['userName'].errors}" [readonly]="isEdit" />
+                <div *ngIf="submitted && customerForm.controls['userName'].errors" class="invalid-feedback">
+                    <div *ngIf="customerForm.controls['userName'].errors.required">
+                        {{ formMessage.message.userName }}
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row">
@@ -66,7 +71,7 @@
                 <input type="text" formControlName="website" class="form-control" maxlength="50" tabindex="5" />
             </div>
             <div class="col-4">
-                <input type="password" formControlName="password" required class="form-control" maxlength="50" tabindex="9" [ngClass]="{'is-invalid': submitted && customerForm.controls['password'].errors}" />
+                <input type="password" formControlName="password" required class="form-control" maxlength="50" tabindex="9" [ngClass]="{'is-invalid': submitted && customerForm.controls['password'].errors}" [readonly]="isEdit" />
                 <div *ngIf="submitted && customerForm.controls['password'].errors" class="invalid-feedback">
                     <div *ngIf="customerForm.controls['password'].errors.required">
                         {{ formMessage.message.password }}
@@ -75,98 +80,89 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-4">
-                {{ formMessage.form.taxCode }}
-            </div>
-            <div class="col-4">
-                {{ formMessage.form.email }}
-            </div>
-            <div class="col-4">
-                {{ formMessage.form.confirmPassword }}
-            </div>
-        </div>
-        <div class="row form-group">
-            <div class="col-4">
-                <input type="text" formControlName="taxCode" class="form-control" maxlength="50" tabindex="6" />
-            </div>
-            <div class="col-4">
-                <input type="text" formControlName="email" class="form-control" maxlength="50" tabindex="7" />
-            </div>
-            <div class="col-4">
-                <input type="password" formControlName="confirmPassword" class="form-control" maxlength="50" tabindex="10" [ngClass]="{'is-invalid': submitted && customerForm.controls['confirmPassword'].errors}" />
-                <div *ngIf="submitted && customerForm.hasError('passwordMismatch')" class="invalid-feedback">
-                    <div *ngIf="customerForm.hasError('passwordMismatch')">
-                        {{ formMessage.message.confirmPassword }}
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-4">
-                {{ formMessage.form.startOn }}
-            </div>
-            <div class="col-4">
-            </div>
-            <div class="col-4">
-            </div>
-        </div>
-        <div class="row form-group">
-            <div class="col-4">
-                <p-calendar formControlName="startOn" showButtonBar="true" [locale]="vnDate" showIcon="true" tabindex="11"></p-calendar>
-            </div>
-            <div class="col-4">
-                <input type="checkbox" formControlName="isCompany" tabindex="12" /> {{ formMessage.form.isCompany }}
-            </div>
-            <div class="col-4">
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-4">
-                {{ formMessage.form.contactName }}
-            </div>
-            <div class="col-4">
-                {{ formMessage.form.contactPhone }}
-            </div>
-            <div class="col-4">
+          <div class="col-4">
+            <div class="row">
+              <div class="col-12">
+                  {{ formMessage.form.taxCode }}
+              </div>
+              <div class="col-12 form-group">
+                  <input type="text" formControlName="taxCode" class="form-control" maxlength="50" tabindex="6" />
+              </div>
+              <div class="col-12">
+                  {{ formMessage.form.startOn }}
+              </div>
+              <div class="col-12 form-group">
+                  <p-calendar formControlName="startOn" showButtonBar="true" [locale]="vnDate" showIcon="true" tabindex="11"></p-calendar>
+              </div>
+              <div class="col-12">
+                  {{ formMessage.form.contactName }}
+              </div>
+              <div class="col-12 form-group">
+                  <input type="text" formControlName="contactName" class="form-control" maxlength="50" tabindex="13" />
+              </div>
+              <div class="col-12">
                 {{ formMessage.form.contactEmail }}
-            </div>
-        </div>
-        <div class="row form-group">
-            <div class="col-4">
-                <input type="text" formControlName="contactName" class="form-control" maxlength="50" tabindex="13" />
-            </div>
-            <div class="col-4">
-                <input type="text" formControlName="contactPhone" class="form-control" maxlength="50" tabindex="14" />
-            </div>
-            <div class="col-4">
+              </div>
+              <div class="col-12 form-group">
                 <input type="text" formControlName="contactEmail" class="form-control" maxlength="50" tabindex="15" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-4">
-                {{ formMessage.form.address }}
-            </div>
-            <div class="col-4">
+              </div>
+              <div class="col-12">
                 {{ formMessage.form.countryId }}
-            </div>
-            <div class="col-4">
-                {{ formMessage.form.cityId }}
-            </div>
-        </div>
-        <div class="row form-group">
-            <div class="col-4">
-                <input type="text" formControlName="address" class="form-control" maxlength="300" tabindex="16" />
-            </div>
-            <div class="col-4">
+              </div>
+              <div class="col-12 form-group">
                 <ng-select [items]="countryList" bindLabel="title" bindValue="value" [selectOnTab]="true" (change)="countryChange()" tabindex="17" formControlName="countryId" [clearable]="false" class="form-control" [loading]="countryLoading">
 
                 </ng-select>
+              </div>
             </div>
-            <div class="col-4">
+          </div>
+          <div class="col-4">
+            <div class="row">
+              <div class="col-12">
+                  {{ formMessage.form.email }}
+              </div>
+              <div class="col-12 form-group">
+                  <input type="text" formControlName="email" class="form-control" maxlength="50" tabindex="7" />
+              </div>
+              <div class="col-12">
+                &nbsp;
+              </div>
+              <div class="col-12 form-group">
+                  <input type="checkbox" formControlName="isCompany" tabindex="12" /> {{ formMessage.form.isCompany }}
+              </div>
+              <div class="col-12">
+                  {{ formMessage.form.contactPhone }}
+              </div>
+              <div class="col-12 form-group">
+                  <input type="text" formControlName="contactPhone" class="form-control" maxlength="50" tabindex="14" />
+              </div>
+              <div class="col-12">
+                {{ formMessage.form.address }}
+              </div>
+              <div class="col-12 form-group">
+                <input type="text" formControlName="address" class="form-control" maxlength="300" tabindex="16" />
+              </div>
+              <div class="col-12">
+                {{ formMessage.form.cityId }}
+              </div>
+              <div class="col-12 form-group">
                 <ng-select [items]="cityList" bindLabel="title" bindValue="value" [selectOnTab]="true" tabindex="18" formControlName="cityId" (open)="getCityList()" [clearable]="false" class="form-control" [loading]="cityLoading">
 
                 </ng-select>
+              </div>
             </div>
+          </div>
+          <div class="col-4">
+            <div class="form-group">
+                <div class="upload-btn-wrapper">
+                    <button class="btn btn-primary"><i class="fas fa-upload"></i>&nbsp;{{ formMessage.form.logo }}</button>
+                    <input type="file" name="myfile" (change)="fileProgress($event)" />
+                </div>
+            </div>
+            <div class="image-preview mb-3" *ngIf="previewUrl">
+                <img [src]="previewUrl" />
+            </div>
+          </div>
         </div>
         <div class="row">
             <div class="col-12">

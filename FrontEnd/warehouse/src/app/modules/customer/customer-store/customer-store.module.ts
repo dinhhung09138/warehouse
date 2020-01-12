@@ -14,7 +14,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MessagesModule } from 'primeng/messages';
 import { CalendarModule } from 'primeng/calendar';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { DateTimeFormat } from 'src/app/core/pipes/datetime-format.pipe';
+import { SharedService } from 'src/app/shared/shared.service';
 
 
 const routes: Routes = [
@@ -25,7 +25,6 @@ const routes: Routes = [
   declarations: [
     CustomerStoreListComponent,
     CustomerStoreFormComponent,
-    DateTimeFormat,
   ],
   entryComponents: [
     CustomerStoreFormComponent,
@@ -38,6 +37,7 @@ const routes: Routes = [
     FormsModule,
     ReactiveFormsModule,
     RouterModule.forChild(routes),
+    SharedService,
     NgSelectModule,
     NgbModule,
     TableModule,

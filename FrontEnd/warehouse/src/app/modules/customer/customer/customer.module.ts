@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { CustomerListComponent } from './components/customer-list/customer-list.component';
 import { CustomerFormComponent } from './components/customer-form/customer-form.component';
 import { Routes, RouterModule } from '@angular/router';
@@ -14,8 +14,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MessagesModule } from 'primeng/messages';
 import { CalendarModule } from 'primeng/calendar';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { DateTimeFormat } from 'src/app/core/pipes/datetime-format.pipe';
 import { ValidationService } from 'src/app/core/services/validation.service';
+import { DateTimeService } from 'src/app/core/services/datetime.service';
+import { ImageFileService } from 'src/app/core/services/image-file.service';
+import { SharedService } from 'src/app/shared/shared.service';
 
 
 const routes: Routes = [
@@ -26,7 +28,6 @@ const routes: Routes = [
   declarations: [
     CustomerListComponent,
     CustomerFormComponent,
-    DateTimeFormat,
   ],
   entryComponents: [
     CustomerFormComponent,
@@ -34,12 +35,16 @@ const routes: Routes = [
   providers: [
     CustomerService,
     ValidationService,
+    ImageFileService,
+    DateTimeService,
+    DatePipe,
   ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     RouterModule.forChild(routes),
+    SharedService,
     NgSelectModule,
     NgbModule,
     TableModule,

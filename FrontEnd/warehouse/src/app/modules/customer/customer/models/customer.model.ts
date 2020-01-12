@@ -3,6 +3,7 @@ export class CustomerModel {
   id: string;
   name: string;
   logoFileId: string;
+  logoFileContent: string;
   primaryPhone: string;
   secondaryPhone: string;
   fax: string;
@@ -34,6 +35,7 @@ export class CustomerModel {
     this.id = '';
     this.name = '';
     this.logoFileId = '';
+    this.logoFileContent = '';
     this.primaryPhone = '';
     this.secondaryPhone = '';
     this.fax = '';

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Core.Common.Constants;
+using Microsoft.AspNetCore.Http;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Customer.Service.Models
@@ -10,14 +12,17 @@ namespace Customer.Service.Models
     {
         public string Id { get; set; }
 
-        [Required]
         public string ClientId { get; set; }
 
         [Required]
         [MaxLength(300)]
         public string Name { get; set; }
 
+        public IFormFile File { get; set; }
+
         public string LogoFileId { get; set; }
+
+        public string LogoFileContent { get; set; }
 
         [MaxLength(20)]
         public string PrimaryPhone { get; set; }
@@ -34,9 +39,11 @@ namespace Customer.Service.Models
         [MaxLength(50)]
         public string TaxCode { get; set; }
 
-        public bool IsCompany { get; set; }
+        public string IsCompany { get; set; } = "1";
 
         public DateTime? StartOn { get; set; }
+
+        public string StartOnString { get; set; }
 
         public string Description { get; set; }
 
@@ -73,12 +80,12 @@ namespace Customer.Service.Models
         [MaxLength(250)]
         public string Password { get; set; }
 
-        public bool IsActive { get; set; }
+        public string IsActive { get; set; } = "1";
 
         public byte[] RowVersion { get; set; }
 
         public string CurrentUserId { get; set; }
 
-        public bool IsEdit { get; set; } = false;
+        public string IsEdit { get; set; } = FormStatus.Insert;
     }
 }

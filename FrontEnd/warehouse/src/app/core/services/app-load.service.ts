@@ -10,11 +10,16 @@ export class AppLoadService {
   constructor(private http: HttpClient) {
   }
 
-  getSetting(): Promise<any> {
+  getSettingSetting(): Promise<any> {
     return this.http.get<ISetting>('assets/config/appconfig.json').toPromise().then(response => {
       ApiSetting.apiRoot = response.apiRoot + '/api/';
       ApiSetting.hubUrl = response.apiRoot + response.hubUrl;
     });
+  }
+
+  getSetting() {
+    ApiSetting.apiRoot = 'https://localhost:44301/api/';
+    ApiSetting.hubUrl = 'https://localhost:44301/hubs/notification/';
   }
 
 }

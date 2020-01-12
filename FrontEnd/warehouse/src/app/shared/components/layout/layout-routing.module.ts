@@ -64,6 +64,11 @@ const routes: Routes = [
     component: LayoutComponent,
     loadChildren: () => import('../../../modules/customer/customer/customer.module').then(m => m.CustomerModule),
   },
+  {
+    path: 'customer/store',
+    component: LayoutComponent,
+    loadChildren: () => import('../../../modules/customer/customer-store/customer-store.module').then(m => m.CustomerStoreModule),
+  },
 ];
 
 @NgModule({

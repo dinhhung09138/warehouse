@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CustomerResource } from '../../customer.resource';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -13,13 +13,14 @@ import { ItemSelectModel } from 'src/app/core/models/item-select.model';
 import { CountryService } from 'src/app/modules/admin/country/services/country.service';
 import { CityService } from 'src/app/modules/admin/city/services/city.service';
 import { ValidationService } from 'src/app/core/services/validation.service';
+import { ImageFileService } from 'src/app/core/services/image-file.service';
 
 @Component({
   selector: 'app-customer-form',
   templateUrl: './customer-form.component.html',
   styleUrls: ['./customer-form.component.css']
 })
-export class CustomerFormComponent implements OnInit {
+export class CustomerFormComponent implements OnInit, OnDestroy {
 
   @Input() isEdit = false;
   @Input() customer: CustomerModel;
@@ -33,6 +34,9 @@ export class CustomerFormComponent implements OnInit {
   cityLoading = false;
   cityList: ItemSelectModel[] = [];
 
+  fileData: File = null;
+  previewUrl: any = null;
+
   vnDate = AppLicationSetting.timeZoneSetting;
 
   constructor(public activeModal: NgbActiveModal,
@@ -42,16 +46,27 @@ export class CustomerFormComponent implements OnInit {
               private customerService: CustomerService,
               private countryService: CountryService,
               private cityService: CityService,
-              private validation: ValidationService) { }
+              private validation: ValidationService,
+              private imageService: ImageFileService) { }
 
   ngOnInit() {
     this.getCountryList();
-    if (this.isEdit == false) {
+    if (this.isEdit === false) {
       this.customer = new CustomerModel(this.isEdit);
     }
+    this.imageService.changeImagePreview.subscribe((image) => {
+      setTimeout(() => {
+        this.previewUrl = image;
+      }, 1);
+    });
     this.initForm();
     this.reloadForm();
     this.getCityList();
+  }
+
+  ngOnDestroy() {
+    this.previewUrl = null;
+    this.fileData = null;
   }
 
   onSubmitForm() {
@@ -65,7 +80,7 @@ export class CustomerFormComponent implements OnInit {
     this.isLoading = true;
     this.loading.showLoading(true);
 
-    this.customerService.save(this.customerForm.value).subscribe((response: ResponseModel) => {
+    this.customerService.save(this.customerForm.value, this.fileData).subscribe((response: ResponseModel) => {
       if (response.responseStatus === ResponseStatus.warning) {
         this.warningMessage.push({severity: 'warn', summary: 'Warning', detail: response.errors.join(',')});
         this.loading.showLoading(false);
@@ -92,9 +107,15 @@ export class CustomerFormComponent implements OnInit {
     this.reloadForm();
   }
 
+  fileProgress(fileInput: any) {
+    this.fileData = fileInput.target.files[0] as File;
+    this.previewUrl = this.imageService.preview(this.fileData);
+  }
+
   private initForm() {
     this.customerForm = this.fb.group({
       id: [this.customer.id ],
+      logoFileId: [this.customer.logoFileId],
       name: [this.customer.name, [Validators.required, Validators.maxLength(300)]],
       primaryPhone: [this.customer.primaryPhone, [Validators.maxLength(20)]],
       secondaryPhone: [this.customer.secondaryPhone, [Validators.maxLength(20)]],
@@ -115,24 +136,19 @@ export class CustomerFormComponent implements OnInit {
       contactEmail: [this.customer.contactEmail, [Validators.maxLength(50)]],
       userName: [this.customer.userName, [Validators.required, Validators.maxLength(50)]],
       password: [this.customer.password, [Validators.required, Validators.maxLength(50)]],
-      confirmPassword: [this.customer.confirmPassword, [Validators.required, Validators.maxLength(50)]],
       isEdit: [this.isEdit],
       isActive: [this.customer.isActive],
       rowVersion: [this.customer.rowVersion],
-    }, {
-      validators: [
-        this.validation.passwordMatch('password', 'confirmPassword', !this.isEdit),
-      ]
     });
   }
 
   private reloadForm() {
 
-    console.log(this.customerForm);
-
     if (this.isEdit === false) {
       return;
     }
+    this.fileData = null;
+    this.previewUrl = null;
 
     this.loading.showLoading(true);
     this.customerService.detail(this.customer.id).subscribe((response: ResponseModel) => {
@@ -144,9 +160,17 @@ export class CustomerFormComponent implements OnInit {
         this.loading.showLoading(false);
       } else {
         this.customer = response.result;
+
+        if (this.customer.logoFileContent) {
+          this.previewUrl = this.customer.logoFileContent;
+        } else {
+          this.previewUrl = null;
+        }
+
         this.customerForm.patchValue({
           id: response.result.id,
           name: response.result.name,
+          logoFileId: response.result.logoFileId,
           primaryPhone: response.result.primaryPhone,
           secondaryPhone: response.result.secondaryPhone,
           fax: response.result.fax,
@@ -167,6 +191,7 @@ export class CustomerFormComponent implements OnInit {
           contactPhone: response.result.contactPhone,
           contactEmail: response.result.contactEmail,
           userName: response.result.userName,
+          password: 'none',
           isEdit: this.isEdit,
           isActive: response.result.isActive,
           rowVersion: response.result.rowVersion,

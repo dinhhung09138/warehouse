@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\DataAccess\WareHouse.DataAccess\WareHouse.DataAccess.csproj" />
+    <ProjectReference Include="..\WareHouse.Service\WareHouse.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>

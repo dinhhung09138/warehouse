@@ -26,8 +26,9 @@
                     {{ formMessage.table.primaryPhone }}
                     <p-sortIcon [field]="'primaryPhone'"></p-sortIcon>
                 </th>
-                <th [pSortableColumn]="'fax'" class="wh-200">
-                    {{ formMessage.table.fax }}
+                <th [pSortableColumn]="'email'" class="wh-200">
+                    {{ formMessage.table.email }}
+                    <p-sortIcon [field]="'email'"></p-sortIcon>
                 </th>
                 <th>
                     {{ formMessage.table.address }}
@@ -35,12 +36,6 @@
                 <th [pSortableColumn]="'startOn'" class="wh-120">
                     {{ formMessage.table.startOn }}
                     <p-sortIcon [field]="'startOn'"></p-sortIcon>
-                </th>
-                <th class="wh-100">
-                    {{ formMessage.table.isCompany }}
-                </th>
-                <th class="wh-200">
-                    {{ formMessage.table.contact }}
                 </th>
                 <th class="wh-80">
                     {{ formMessage.table.active }}
@@ -57,7 +52,7 @@
                     {{ getFullAddress(item.address, item.cityName, item.countryName) }}
                 </td>
                 <td>{{ item.startOn | dateTimeFormat:'day' }}</td>
-                
+
                 <td class="text-center">
                     <i *ngIf="item.isActive" class="fas fa-check"></i>
                     <i *ngIf="!item.isActive" class="fas fa-minus-circle"></i>

@@ -13,6 +13,8 @@ using Warehouse.DataAccess;
 using Z.EntityFramework.Plus;
 using Core.Common.Helpers;
 using Customer.Service.Constants;
+using WareHouse.Service.Interfaces;
+using Core.Common.Constants;
 
 namespace Customer.Service
 {
@@ -32,14 +34,21 @@ namespace Customer.Service
         private readonly ILoggerService _logger;
 
         /// <summary>
+        /// File service.
+        /// </summary>
+        private readonly IFileService _fileService;
+
+        /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
         /// <param name="context">Data context.</param>
         /// <param name="logger">Log service.</param>
-        public CustomerService(IWareHouseUnitOfWork context, ILoggerService logger)
+        /// <param name="fileService">File service interface.</param>
+        public CustomerService(IWareHouseUnitOfWork context, ILoggerService logger, IFileService fileService)
         {
             _context = context;
             _logger = logger;
+            _fileService = fileService;
         }
 
         /// <summary>
@@ -73,13 +82,13 @@ namespace Customer.Service
                                 Fax = cus.Fax,
                                 Email = cus.Email,
                                 Website = cus.Website,
-                                IsCompany = cus.IsCompany,
+                                IsCompany = cus.IsCompany ? "1" : "0",
                                 ContactName = cus.ContactName,
                                 ContactPhone = cus.ContactPhone,
                                 ContactEmail = cus.ContactEmail,
                                 StartOn = cus.StartOn,
                                 Address = cus.Address,
-                                IsActive = cus.IsActive,
+                                IsActive = cus.IsActive ? "1" : "0",
                                 CountryId = country.Id != null ? country.Id.ToString() : string.Empty,
                                 CountryName = country.Id != null ? country.Name.ToString() : string.Empty,
                                 CityId = city.Id != null ? city.Id.ToString() : string.Empty,
@@ -158,7 +167,11 @@ namespace Customer.Service
                 CustomerModel md = new CustomerModel();
                 md.Id = item.Id.ToString();
                 md.Name = item.Name;
-                md.LogoFileId = item.LogoFileId.HasValue ? string.Empty : item.LogoFileId.ToString();
+                if (item.LogoFileId.HasValue)
+                {
+                    md.LogoFileId = item.LogoFileId.HasValue ? item.LogoFileId.ToString() : string.Empty;
+                    md.LogoFileContent = await _fileService.ImageContent(item.LogoFileId.ToString()).ConfigureAwait(false);
+                }
                 md.PrimaryPhone = item.PrimaryPhone;
                 md.SecondaryPhone = item.SecondaryPhone;
                 md.Fax = item.Fax;
@@ -168,7 +181,7 @@ namespace Customer.Service
                 md.ContactName = item.ContactName;
                 md.ContactPhone = item.ContactPhone;
                 md.ContactEmail = item.ContactEmail;
-                md.IsCompany = item.IsCompany;
+                md.IsCompany = item.IsCompany ? "1" : "0";
                 md.StartOn = item.StartOn;
                 md.Description = item.Description;
                 md.Address = item.Address;
@@ -177,7 +190,7 @@ namespace Customer.Service
                 md.Longtitue = item.Longtitue;
                 md.Latitude = item.Latitude;
                 md.UserName = item.UserName;
-                md.IsActive = item.IsActive;
+                md.IsActive = item.IsActive ? "1" : "0";
                 md.RowVersion = item.RowVersion;
 
                 response.Result = md;
@@ -206,7 +219,17 @@ namespace Customer.Service
                     throw new Exception(CommonMessage.ParameterInvalid);
                 }
 
-                if (model.IsEdit)
+                model.StartOn = model.StartOnString.ToDate();
+
+                string fileId = string.Empty;
+
+                if (model.File != null)
+                {
+                    fileId = Guid.NewGuid().ToString();
+                    await _fileService.UploadFile(model.File, fileId, model.CurrentUserId).ConfigureAwait(false);
+                }
+
+                if (model.IsEdit == FormStatus.Update)
                 {
                     Guid id = new Guid(model.Id);
 
@@ -233,33 +256,49 @@ namespace Customer.Service
                         return response;
                     }
 
-                    await _context.CustomerRepository.Query()
-                        .Where(m => m.Id == id)
-                        .UpdateAsync(m => new Warehouse.DataAccess.Entities.Customer()
-                        {
-                            Name = model.Name,
-                            LogoFileId = null, // TOOD
-                            PrimaryPhone = model.PrimaryPhone,
-                            SecondaryPhone = model.SecondaryPhone,
-                            Fax = model.Fax,
-                            Website = model.Website,
-                            TaxCode = model.TaxCode,
-                            Email = model.Email,
-                            IsCompany = model.IsCompany,
-                            StartOn = model.StartOn.HasValue ? model.StartOn.Value.ToLocalTime() : model.StartOn,
-                            Description = model.Description,
-                            Address = model.Address,
-                            Longtitue = model.Longtitue,
-                            Latitude = model.Latitude,
-                            ContactName = model.ContactName,
-                            ContactPhone = model.ContactPhone,
-                            ContactEmail = model.ContactEmail,
-                            CityId = (model.CityId.Length > 0 ? new Guid(model.CityId) : default(Guid)),
-                            CountryId = (model.CountryId.Length > 0 ? new Guid(model.CountryId) : default(Guid)),
-                            IsActive = model.IsActive,
-                            UpdateBy = model.CurrentUserId,
-                            UpdateDate = DateTime.Now,
-                        }).ConfigureAwait(true);
+                    if (!string.IsNullOrEmpty(model.LogoFileId) && !string.IsNullOrEmpty(fileId))
+                    {
+                        await _fileService.DeleteFile(model.LogoFileId).ConfigureAwait(false);
+                    }
+
+                    var md = await _context.CustomerRepository.FirstOrDefaultAsync(m => m.Id == id).ConfigureAwait(false);
+
+                    md.Name = model.Name;
+
+                    if (!string.IsNullOrEmpty(fileId))
+                    {
+                        md.LogoFileId = new Guid(fileId);
+                    }
+
+                    md.PrimaryPhone = model.PrimaryPhone;
+                    md.SecondaryPhone = model.SecondaryPhone;
+                    md.Fax = model.Fax;
+                    md.Website = model.Website;
+                    md.TaxCode = model.TaxCode;
+                    md.Email = model.Email;
+                    md.IsCompany = model.IsCompany == "1" ? true : false;
+                    md.StartOn = model.StartOn;
+                    md.Description = model.Description;
+                    md.Address = model.Address;
+                    md.Longtitue = model.Longtitue;
+                    md.Latitude = model.Latitude;
+                    md.ContactName = model.ContactName;
+                    md.ContactPhone = model.ContactPhone;
+                    md.ContactEmail = model.ContactEmail;
+                    if (!string.IsNullOrEmpty(model.CityId))
+                    {
+                        md.CityId = new Guid(model.CityId);
+                    }
+                    if (!string.IsNullOrEmpty(model.CountryId))
+                    {
+                        md.CountryId = new Guid(model.CountryId);
+                    }
+                    md.IsActive = model.IsActive == "1" ? true : false;
+                    md.UpdateBy = model.CurrentUserId;
+                    md.UpdateDate = DateTime.Now;
+
+                    _context.CustomerRepository.Update(md);
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                 }
                 else
                 {
@@ -270,38 +309,51 @@ namespace Customer.Service
                         password = PasswordSecurityHelper.GetHashedPassword(model.Password);
                     }
 
-                    await _context.CustomerRepository.AddAsync(new Warehouse.DataAccess.Entities.Customer()
+                    Warehouse.DataAccess.Entities.Customer md = new Warehouse.DataAccess.Entities.Customer();
+
+                    md.Id = Guid.NewGuid();
+                    md.ClientId = new Guid(model.ClientId);
+                    md.Name = model.Name;
+
+                    if (!string.IsNullOrEmpty(fileId))
                     {
-                        Id = Guid.NewGuid(),
-                        Name = model.Name,
-                        LogoFileId = null, // TOOD
-                        PrimaryPhone = model.PrimaryPhone,
-                        SecondaryPhone = model.SecondaryPhone,
-                        Fax = model.Fax,
-                        Website = model.Website,
-                        TaxCode = model.TaxCode,
-                        Email = model.Email,
-                        IsCompany = model.IsCompany,
-                        StartOn = model.StartOn.HasValue ? model.StartOn.Value.ToLocalTime() : model.StartOn,
-                        Description = model.Description,
-                        Address = model.Address,
-                        Longtitue = model.Longtitue,
-                        Latitude = model.Latitude,
-                        ContactName = model.ContactName,
-                        ContactPhone = model.ContactPhone,
-                        ContactEmail = model.ContactEmail,
-                        CityId = (model.CityId.Length > 0 ? new Guid(model.CityId) : default(Guid)),
-                        CountryId = (model.CountryId.Length > 0 ? new Guid(model.CountryId) : default(Guid)),
-                        UserName = model.UserName,
-                        Password = password,
-                        IsActive = model.IsActive,
-                        CreateBy = model.CurrentUserId,
-                        CreateDate = DateTime.Now,
-                        Deleted = false,
-                    }).ConfigureAwait(true);
+                        md.LogoFileId = new Guid(fileId);
+                    }
+
+                    md.PrimaryPhone = model.PrimaryPhone;
+                    md.SecondaryPhone = model.SecondaryPhone;
+                    md.Fax = model.Fax;
+                    md.Website = model.Website;
+                    md.TaxCode = model.TaxCode;
+                    md.Email = model.Email;
+                    md.IsCompany = model.IsCompany == "1" ? true : false;
+                    md.StartOn = model.StartOn;
+                    md.Description = model.Description;
+                    md.Address = model.Address;
+                    md.Longtitue = model.Longtitue;
+                    md.Latitude = model.Latitude;
+                    md.ContactName = model.ContactName;
+                    md.ContactPhone = model.ContactPhone;
+                    md.ContactEmail = model.ContactEmail;
+                    md.UserName = model.UserName;
+                    md.Password = password;
+                    if (!string.IsNullOrEmpty(model.CityId))
+                    {
+                        md.CityId = new Guid(model.CityId);
+                    }
+                    if (!string.IsNullOrEmpty(model.CountryId))
+                    {
+                        md.CountryId = new Guid(model.CountryId);
+                    }
+                    md.IsActive = model.IsActive == "1" ? true : false;
+                    md.CreateBy = model.CurrentUserId;
+                    md.CreateDate = DateTime.Now;
+                    md.Deleted = false;
+
+                    await _context.CustomerRepository.AddAsync(md).ConfigureAwait(false);
+                    await _context.SaveChangesAsync().ConfigureAwait(false);
                 }
 
-                await _context.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -456,7 +508,7 @@ namespace Customer.Service
                                                     .Where(m => m.Id == id)
                                                     .UpdateAsync(m => new Warehouse.DataAccess.Entities.Customer()
                                                     {
-                                                        IsActive = model.IsActive,
+                                                        IsActive = model.IsActive == "1" ? true : false,
                                                         UpdateBy = model.CurrentUserId,
                                                         UpdateDate = DateTime.Now,
                                                     }).ConfigureAwait(false);

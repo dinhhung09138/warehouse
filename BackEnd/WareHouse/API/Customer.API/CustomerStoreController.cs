@@ -39,6 +39,7 @@ namespace Customer.API
         [Route("list")]
         public async Task<IActionResult> List(CustomerFilterModel filter)
         {
+            filter.ClientId = base.CurrentClientId();
             var response = await _customerStoreService.List(filter).ConfigureAwait(false);
             return Ok(response);
         }
@@ -51,7 +52,7 @@ namespace Customer.API
         [Route("list-combobox")]
         public async Task<IActionResult> ListCombobox()
         {
-            var response = await _customerStoreService.ListCombobox(base.CurrentUserId()).ConfigureAwait(false);
+            var response = await _customerStoreService.ListCombobox(base.CurrentClientId()).ConfigureAwait(false);
             return Ok(response);
         }
 
@@ -64,7 +65,7 @@ namespace Customer.API
         [Route("detail/{id}")]
         public async Task<IActionResult> Detail([FromRoute] string id)
         {
-            var response = await _customerStoreService.Detail(new Guid(id), base.CurrentUserId()).ConfigureAwait(false);
+            var response = await _customerStoreService.Detail(new Guid(id), base.CurrentClientId()).ConfigureAwait(false);
             return Ok(response);
         }
 
@@ -75,11 +76,13 @@ namespace Customer.API
         /// <returns>IActionResult.</returns>
         [HttpPost]
         [Route("save")]
-        public async Task<IActionResult> Save(CustomerStoreModel model)
+        public async Task<IActionResult> Save([FromBody] CustomerStoreModel model)
         {
             if (model != null)
             {
                 model.CurrentUserId = CurrentUserId();
+                model.ClientId = base.CurrentClientId();
+                
             }
 
             var response = await _customerStoreService.Save(model).ConfigureAwait(false);
@@ -98,6 +101,7 @@ namespace Customer.API
             if (model != null)
             {
                 model.CurrentUserId = CurrentUserId();
+                model.ClientId = base.CurrentClientId();
             }
 
             var response = await _customerStoreService.UpdateActiveStatus(model).ConfigureAwait(false);
@@ -116,6 +120,7 @@ namespace Customer.API
             if (model != null)
             {
                 model.CurrentUserId = CurrentUserId();
+                model.ClientId = base.CurrentClientId();
             }
 
             var response = await _customerStoreService.Delete(model).ConfigureAwait(false);

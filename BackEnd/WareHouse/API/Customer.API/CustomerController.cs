@@ -75,7 +75,7 @@ namespace Customer.API
         /// <returns>IActionResult.</returns>
         [HttpPost]
         [Route("save")]
-        public async Task<IActionResult> Save(CustomerModel model)
+        public async Task<IActionResult> Save([FromForm] CustomerModel model)
         {
             if (model != null)
             {

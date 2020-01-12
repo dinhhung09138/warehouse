@@ -32,13 +32,11 @@
     <ProjectReference Include="..\API\Authentication.API\Authentication.API.csproj" />
     <ProjectReference Include="..\API\Common.API\Common.API.csproj" />
     <ProjectReference Include="..\API\Customer.API\Customer.API.csproj" />
-    <ProjectReference Include="..\API\PurchaseOrder.API\PurchaseOrder.API.csproj" />
     <ProjectReference Include="..\API\WareHouse.API\WareHouse.API.csproj" />
     <ProjectReference Include="..\DataAccess\WareHouse.DataAccess\WareHouse.DataAccess.csproj" />
     <ProjectReference Include="..\Services\Admin.Service\Admin.Service.csproj" />
     <ProjectReference Include="..\Services\Authentication.Service\Authentication.Service.csproj" />
     <ProjectReference Include="..\Services\Customer.Service\Customer.Service.csproj" />
-    <ProjectReference Include="..\Services\PurchaseOrder.Service\PurchaseOrder.Service.csproj" />
     <ProjectReference Include="..\Services\WareHouse.Service\WareHouse.Service.csproj" />
   </ItemGroup>
 

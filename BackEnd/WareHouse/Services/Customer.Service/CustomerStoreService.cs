@@ -68,13 +68,13 @@ namespace Customer.Service
                             join empl in _context.CustomerEmployeeRepository.Query() on cus.StoreManagerId equals empl.Id
                             into empls
                             from empl in empls.DefaultIfEmpty()
-                            where cus.Deleted == false && cus.CreateBy == filter.CustomerId
+                            where cus.Deleted == false && cus.ClientId == new Guid(filter.ClientId)
                             select new CustomerStoreModel
                             {
                                 Id = cus.Id.ToString(),
                                 Name = cus.Name,
                                 PrimaryPhone = cus.PrimaryPhone,
-                                Fax = cus.Fax,
+                                Email = cus.Email,
                                 StartOn = cus.StartOn,
                                 Address = cus.Address,
                                 IsActive = cus.IsActive,
@@ -89,7 +89,7 @@ namespace Customer.Service
                 {
                     query = query.Where(m => m.Name.ToLower().Contains(filter.Text)
                                             || m.PrimaryPhone.ToLower().Contains(filter.Text)
-                                            || m.Fax.ToLower().Contains(filter.Text)
+                                            || m.Email.ToLower().Contains(filter.Text)
                                             || m.CityName.ToLower().Contains(filter.Text)
                                             || m.CountryName.ToLower().Contains(filter.Text)
                                             || m.StoreManagerName.ToLower().Contains(filter.Text)
@@ -112,9 +112,9 @@ namespace Customer.Service
         /// <summary>
         /// Get list of customer's store data to show on combobox.
         /// </summary>
-        /// <param name="customerId">Customer's id</param>
+        /// <param name="clientId">Client Id.</param>
         /// <returns>ResponseModel object.</returns>
-        public async Task<ResponseModel> ListCombobox(string customerId)
+        public async Task<ResponseModel> ListCombobox(string clientId)
         {
             var response = new ResponseModel();
             try
@@ -122,7 +122,7 @@ namespace Customer.Service
                 var query = _context.CustomerStoreRepository.Query()
                                                    .Where(m => m.Deleted == false 
                                                                && m.IsActive == true
-                                                               && m.CreateBy == customerId)
+                                                               && m.ClientId == new Guid(clientId))
                                                    .Select(m => new SelectedItemModel
                                                    {
                                                        Value = m.Id.ToString(),
@@ -144,16 +144,16 @@ namespace Customer.Service
         /// Get customer store detail.
         /// </summary>
         /// <param name="id">Customer store's id.</param>
-        /// <param name="customerId">Customer's id</param>
+        /// <param name="clientId">Client Id.</param>
         /// <returns>ResponseModel object.</returns>
-        public async Task<ResponseModel> Detail(Guid id, string customerId)
+        public async Task<ResponseModel> Detail(Guid id, string clientId)
         {
             var response = new ResponseModel();
             try
             {
                 var item = await _context.CustomerStoreRepository.FirstOrDefaultAsync(m => m.Deleted == false
                                                                                       && m.Id == id
-                                                                                      && m.CreateBy == customerId)
+                                                                                      && m.ClientId == new Guid(clientId))
                                                             .ConfigureAwait(false);
 
                 if (item == null)
@@ -210,7 +210,7 @@ namespace Customer.Service
 
                     var checkExists = await _context.CustomerStoreRepository
                                                         .AnyAsync(m => m.Id == id
-                                                                       && m.CreateBy == model.CurrentUserId)
+                                                                       && m.ClientId == new Guid(model.ClientId))
                                                         .ConfigureAwait(false);
 
                     if (!checkExists)
@@ -222,7 +222,7 @@ namespace Customer.Service
 
                     var checkCurrent = await _context.CustomerStoreRepository
                                                         .AnyAsync(m => m.Id == id
-                                                                       && m.CreateBy == model.CurrentUserId
+                                                                       && m.ClientId == new Guid(model.ClientId)
                                                                        && m.RowVersion != model.RowVersion)
                                                         .ConfigureAwait(false);
 
@@ -308,7 +308,7 @@ namespace Customer.Service
 
                 var checkExists = await _context.CustomerStoreRepository
                                                             .AnyAsync(m => m.Id == id
-                                                                           && m.CreateBy == model.CurrentUserId)
+                                                                           && m.ClientId == new Guid(model.ClientId))
                                                             .ConfigureAwait(true);
 
                 if (!checkExists)
@@ -356,7 +356,7 @@ namespace Customer.Service
 
                 var checkExists = await _context.CustomerRepository
                                                         .AnyAsync(m => m.Id == id
-                                                                       && m.CreateBy == model.CurrentUserId)
+                                                                       && m.ClientId == new Guid(model.ClientId))
                                                         .ConfigureAwait(true);
 
                 if (!checkExists)

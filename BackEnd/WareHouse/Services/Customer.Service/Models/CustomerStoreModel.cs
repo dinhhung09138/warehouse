@@ -10,6 +10,8 @@ namespace Customer.Service.Models
     {
         public string Id { get; set; }
 
+        public string ClientId { get; set; }
+
         [Required]
         [MaxLength(200)]
         public string Name { get; set; }

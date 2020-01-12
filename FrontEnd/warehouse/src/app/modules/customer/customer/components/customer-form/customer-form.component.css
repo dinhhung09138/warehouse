@@ -1,0 +1,17 @@
+input[type=checkbox],
+input[type=radio] {
+    width: 20px;
+    display: inline;
+    margin: 11px 5px;
+}
+
+.image-preview {
+    width: 100px;
+    height: auto;
+    ;
+}
+
+.image-preview img {
+    width: 100%;
+    height: auto;
+}

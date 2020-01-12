@@ -43,10 +43,10 @@ export class GoodsService {
     formData.append('id', model.id);
     formData.append('code', model.code);
     formData.append('name', model.name);
-    formData.append('brand', model.brand);
-    formData.append('color', model.color);
-    formData.append('size', model.size);
-    formData.append('description', model.description);
+    formData.append('brand', model.brand || '');
+    formData.append('color', model.color || '');
+    formData.append('size', model.size || '');
+    formData.append('description', model.description || '');
     formData.append('unitId', model.unitId);
     formData.append('goodsCategoryId', model.goodsCategoryId);
     formData.append('fileId', model.fileId);

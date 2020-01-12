@@ -22,17 +22,17 @@ namespace Customer.Service.Interfaces
         /// <summary>
         /// Get list of customer employee data to show on combobox.
         /// </summary>
-        /// <param name="customerId">Customer's id</param>
+        /// <param name="clientId">Client Id.</param>
         /// <returns>ResponseModel object.</returns>
-        Task<ResponseModel> ListCombobox(string customerId);
+        Task<ResponseModel> ListCombobox(string clientId);
 
         /// <summary>
         /// Get customer employee detail.
         /// </summary>
         /// <param name="id">Customer employee's id.</param>
-        /// <param name="customerId">Customer's id</param>
+        /// <param name="clientId">Client Id.</param>
         /// <returns>ResponseModel object.</returns>
-        Task<ResponseModel> Detail(Guid id, string customerId);
+        Task<ResponseModel> Detail(Guid id, string clientId);
 
         /// <summary>
         /// Save a customer employee function.

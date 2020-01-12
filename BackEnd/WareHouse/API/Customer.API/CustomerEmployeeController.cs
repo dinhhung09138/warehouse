@@ -39,6 +39,7 @@ namespace Customer.API
         [Route("list")]
         public async Task<IActionResult> List(CustomerFilterModel filter)
         {
+            filter.ClientId = base.CurrentClientId();
             var response = await _customerEmplService.List(filter).ConfigureAwait(false);
             return Ok(response);
         }
@@ -51,7 +52,7 @@ namespace Customer.API
         [Route("list-combobox")]
         public async Task<IActionResult> ListCombobox()
         {
-            var response = await _customerEmplService.ListCombobox(base.CurrentUserId()).ConfigureAwait(false);
+            var response = await _customerEmplService.ListCombobox(base.CurrentClientId()).ConfigureAwait(false);
             return Ok(response);
         }
 
@@ -64,7 +65,7 @@ namespace Customer.API
         [Route("detail/{id}")]
         public async Task<IActionResult> Detail([FromRoute] string id)
         {
-            var response = await _customerEmplService.Detail(new Guid(id), base.CurrentUserId()).ConfigureAwait(false);
+            var response = await _customerEmplService.Detail(new Guid(id), base.CurrentClientId()).ConfigureAwait(false);
             return Ok(response);
         }
 
@@ -75,11 +76,12 @@ namespace Customer.API
         /// <returns>IActionResult.</returns>
         [HttpPost]
         [Route("save")]
-        public async Task<IActionResult> Save(CustomerEmployeeModel model)
+        public async Task<IActionResult> Save([FromForm] CustomerEmployeeModel model)
         {
             if (model != null)
             {
                 model.CurrentUserId = CurrentUserId();
+                model.ClientId = base.CurrentClientId();
             }
 
             var response = await _customerEmplService.Save(model).ConfigureAwait(false);
@@ -98,6 +100,7 @@ namespace Customer.API
             if (model != null)
             {
                 model.CurrentUserId = CurrentUserId();
+                model.ClientId = base.CurrentClientId();
             }
 
             var response = await _customerEmplService.CreateUserAccount(model).ConfigureAwait(false);
@@ -116,6 +119,7 @@ namespace Customer.API
             if (model != null)
             {
                 model.CurrentUserId = CurrentUserId();
+                model.ClientId = base.CurrentClientId();
             }
 
             var response = await _customerEmplService.UpdatePassword(model).ConfigureAwait(false);
@@ -134,6 +138,7 @@ namespace Customer.API
             if (model != null)
             {
                 model.CurrentUserId = CurrentUserId();
+                model.ClientId = base.CurrentClientId();
             }
 
             var response = await _customerEmplService.UpdateActiveStatus(model).ConfigureAwait(false);
@@ -152,6 +157,7 @@ namespace Customer.API
             if (model != null)
             {
                 model.CurrentUserId = CurrentUserId();
+                model.ClientId = base.CurrentClientId();
             }
 
             var response = await _customerEmplService.Delete(model).ConfigureAwait(false);

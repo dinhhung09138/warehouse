@@ -30,7 +30,7 @@ export class CustomerResource {
     titleEdit: 'Edit Customer',
     form: {
       name: 'Name',
-      logoFileId: '',
+      logo: 'Logo',
       primaryPhone: 'Primary Phone',
       secondaryPhone: 'Secondary phone',
       fax: 'Fax',

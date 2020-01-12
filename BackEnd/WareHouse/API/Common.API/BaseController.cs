@@ -66,7 +66,7 @@ namespace Common.API
 
         protected string CurrentClientId()
         {
-            return Guid.NewGuid().ToString();
+            return new Guid("6F81D1D1-1D08-4DB2-80B4-644FAD7A77EA").ToString();
         }
 
         /// <summary>

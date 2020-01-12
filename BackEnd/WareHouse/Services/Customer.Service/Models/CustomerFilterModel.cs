@@ -8,5 +8,6 @@ namespace Customer.Service.Models
     public class CustomerFilterModel : FilterModel
     {
         public string CustomerId { get; set; }
+        public string ClientId { get; set; }
     }
 }
